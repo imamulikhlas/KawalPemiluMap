@@ -40,7 +40,7 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
 </head>
 <body>
 <div class="container mt-4">
-    <h2>KAWAL PEMILU 2024</h2>
+    <h2>KAWAL PEMILU 2024 - #BANTUMENGAWAL</h2>
     <div id="mapid" style="height: 500px;"></div>
 </div>
 
