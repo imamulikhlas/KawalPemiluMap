@@ -230,7 +230,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                 <div class="footer-navigation">
                     <div class="container">
                         <div class="vertical-aligned-elements">
-                            <div class="element width-50 bg-success">🇮🇩 #KAWALPEMILU2024 Mams-ark.my.id</div>
+                            <div class="element width-50">🇮🇩 #KAWALPEMILU2024 Mams-ark.my.id</div>
                         </div>
                     </div>
                 </div>
