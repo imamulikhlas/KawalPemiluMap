@@ -81,7 +81,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
         <div id="page-content">
             <div class="hero-section full-screen has-map has-sidebar">
                 <div class="map-wrapper">
-                    <div id="mapid" style="height: 820px; width: 100%; position: relative; top: 0px; left: 0px; background-color: rgb(229, 227, 223);"></div>
+                    <div id="mapid"></div>
 
                 </div>
                 <!--end map-wrapper-->
