@@ -1,29 +1,24 @@
 <?php
 // URL API
-$url = "https://us-central1-kp24-fd486.cloudfunctions.net/hierarchy2";
+$url = "https://sirekap-obj-data.kpu.go.id/pemilu/hhcw/ppwp.json";
 
-// Data yang akan dikirim melalui POST
-$data = array("data" => array("id" => ""));
-$data_string = json_encode($data);
-
-// Setup cURL
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+// Setup cURL untuk GET request
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Content-Type: application/json',
-    'Content-Length: ' . strlen($data_string))
-);
+curl_setopt($ch, CURLOPT_HEADER, false);
 
 // Execute cURL, fetch the JSON data, decode it into an array, and then close the cURL session
 $result = curl_exec($ch);
 $resultArray = json_decode($result, true);
 curl_close($ch);
 
-// Prepare data for use in JavaScript
-$jsonData = json_encode($resultArray['result']['aggregated']);
+// Siapkan data untuk digunakan dalam JavaScript
+// Disini, Anda bisa memilih untuk langsung mengirimkan seluruh response atau hanya bagian tertentu
+$jsonData = json_encode($resultArray);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,7 +35,9 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
 </head>
 <body>
 <div class="container mt-4">
-    <h2>KAWAL PEMILU 2024 - #BANTUMENGAWAL</h2>
+    <div class="text-center">
+    <h2>Peta Sebaran Suara - KAWAL PEMILU 2024</h2>
+    </div>
     <div id="mapid" style="height: 500px;"></div>
 </div>
 
@@ -61,13 +58,25 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
     // Data pemilu diperoleh dari PHP
     var hasilPemilu = JSON.parse('<?php echo $jsonData; ?>');
 
+    var timestamp = hasilPemilu.ts;
+    var psu = hasilPemilu.psu;
+    var chartData = hasilPemilu.chart;
+
+    // Contoh: Menampilkan data ts, psu, dan chart pada konsol
+    console.log('Timestamp:', timestamp);
+    console.log('PSU:', psu);
+    console.log('Chart Data:', chartData);
+
+    
     function getColor(data) {
-        if (!data) return 'gray'; 
-        var pas1 = data.pas1, pas2 = data.pas2, pas3 = data.pas3;
-        var max = Math.max(pas1, pas2, pas3);
-        if (max === pas1) return 'orange';
-        if (max === pas2) return 'blue';
-        return 'red';
+    if (!data) return 'gray'; 
+    var pas1 = data['100025']; 
+    var pas2 = data['100026'];
+    var pas3 = data['100027'];
+    var max = Math.max(pas1, pas2, pas3);
+    if (max === pas1) return 'orange';
+    if (max === pas2) return 'blue';
+    return 'red';
     }
 
     fetch('geojson/indonesia-prov.geojson')
@@ -77,15 +86,15 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
                 style: function(feature) {
                     var kodeProvinsi = feature.properties.kode.toString();
                     var warna = 'gray';
-                    if (hasilPemilu[kodeProvinsi] && hasilPemilu[kodeProvinsi].length > 0) {
-                        var dataProvinsi = hasilPemilu[kodeProvinsi][0];
+                    if (hasilPemilu.table[kodeProvinsi]) {
+                        var dataProvinsi = hasilPemilu.table[kodeProvinsi];
                         warna = getColor(dataProvinsi);
                     }
                     return {color: warna, weight: 2, fillOpacity: 0.8};
                 },
                 onEachFeature: function(feature, layer) {
                     var kodeProvinsi = feature.properties.kode.toString();
-                    var data = hasilPemilu[kodeProvinsi] ? hasilPemilu[kodeProvinsi][0] : null;
+                    var data = hasilPemilu.table[kodeProvinsi];
                     if (data) {
                         // Menambahkan tag img untuk logo paslon
                         var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
@@ -93,7 +102,7 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
                         var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
                         
                         // Memasukkan tag img ke dalam infoPemilu
-                        var infoPemiluWithLogo = `<b>${logoPaslon1} ANIES - MUHAIMIN: ${data.pas1} Suara<br>${logoPaslon2} PRABOWO - GIBRAN: ${data.pas2} Suara<br>${logoPaslon3} GANJAR - MAHFUD: ${data.pas3} Suara</b>`;
+                        var infoPemiluWithLogo = `<b>${logoPaslon1} ANIES - MUHAIMIN: ${data['100025']} Suara<br>${logoPaslon2} PRABOWO - GIBRAN: ${data['100026']} Suara<br>${logoPaslon3} GANJAR - MAHFUD: ${data['100027']} Suara</b>`;
                         
                         layer.bindTooltip(feature.properties.Propinsi);
                         // Menggunakan infoPemiluWithLogo sebagai konten popup
@@ -105,13 +114,13 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
         });
 
     // Add a legend for overseas data
-    var overseasData = hasilPemilu["99"] ? hasilPemilu["99"][0] : null;
+    var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
     if (overseasData) {
         var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'card p-2 info legend');
-            div.innerHTML += `<p class="mb-0"><b>LUAR NEGERI</b><br>ANIES - MUHAIMIN: ${overseasData.pas1} Suara<br>PRABOWO - GIBRAN: ${overseasData.pas2} Suara<br>GANJAR - MAHFUD: ${overseasData.pas3} Suara</p>`;
+            div.innerHTML += `<p class="mb-0"><b>LUAR NEGERI</b><br>ANIES - MUHAIMIN: ${overseasData["100025"]} Suara<br>PRABOWO - GIBRAN: ${overseasData["100026"]} Suara<br>GANJAR - MAHFUD: ${overseasData["100027"]} Suara</p>`;
             return div;
         };
 
