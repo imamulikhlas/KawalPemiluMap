@@ -1,39 +1,46 @@
 <?php
-// Nama file cache
+// Tentukan lokasi dan nama file cache
 $cacheFile = 'data-kpu.json';
-$cacheLifetime = 600; // Cache lifetime dalam detik (10 menit)
+$cacheLifetime = 600; // Durasi cache dalam detik (10 menit)
 
-// Fungsi untuk mengecek apakah cache masih valid
+// Fungsi untuk memeriksa validitas cache
 function isCacheValid($file, $lifetime) {
-    return file_exists($file) && (filemtime($file) > (time() - $lifetime));
+    return file_exists($file) && (time() - filemtime($file) < $lifetime);
 }
 
-// Setup cURL hanya jika cache tidak valid atau tidak ada
+// Cek apakah cache valid
 if (!isCacheValid($cacheFile, $cacheLifetime)) {
-    // URL API
+    // Jika cache tidak valid, lakukan request ke API
     $url = "https://sirekap-obj-data.kpu.go.id/pemilu/hhcw/ppwp.json";
-
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HEADER, false);
-
-    // Execute cURL, fetch the JSON data
     $result = curl_exec($ch);
     curl_close($ch);
-
-    // Simpan hasil ke dalam file cache
+    
+    // Simpan data baru ke cache
     file_put_contents($cacheFile, $result);
 } else {
-    // Baca hasil dari file cache
+    // Jika cache masih valid, gunakan data dari cache
     $result = file_get_contents($cacheFile);
 }
 
-// Decode JSON data menjadi array
+// Decode data JSON menjadi array
 $resultArray = json_decode($result, true);
 
-// Siapkan data untuk digunakan dalam JavaScript
+// Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
 $jsonData = json_encode($resultArray);
+
+// Ambil timestamp dan persentase suara masuk dari data
+$timestamp = $resultArray['ts'];
+$persentaseSuaraMasuk = $resultArray['chart']['persen'];
+
+// HITUNG PERSENTASE
+$totalSuara = $resultArray['chart']['100025'] + $resultArray['chart']['100026'] + $resultArray['chart']['100027'];
+$persentasePas1 = ($resultArray['chart']['100025'] / $totalSuara) * 100;
+$persentasePas2 = ($resultArray['chart']['100026'] / $totalSuara) * 100;
+$persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 ?>
 
 <!DOCTYPE html>

@@ -1,25 +1,47 @@
 <?php
-// URL API
-$url = "https://sirekap-obj-data.kpu.go.id/pemilu/hhcw/ppwp.json";
+// Tentukan lokasi dan nama file cache
+$cacheFile = 'data-kpu.json';
+$cacheLifetime = 600; // Durasi cache dalam detik (10 menit)
 
-// Setup cURL untuk GET request
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
+// Fungsi untuk memeriksa validitas cache
+function isCacheValid($file, $lifetime) {
+    return file_exists($file) && (time() - filemtime($file) < $lifetime);
+}
 
-// Execute cURL, fetch the JSON data, decode it into an array, and then close the cURL session
-$result = curl_exec($ch);
+// Cek apakah cache valid
+if (!isCacheValid($cacheFile, $cacheLifetime)) {
+    // Jika cache tidak valid, lakukan request ke API
+    $url = "https://sirekap-obj-data.kpu.go.id/pemilu/hhcw/ppwp.json";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    
+    // Simpan data baru ke cache
+    file_put_contents($cacheFile, $result);
+} else {
+    // Jika cache masih valid, gunakan data dari cache
+    $result = file_get_contents($cacheFile);
+}
+
+// Decode data JSON menjadi array
 $resultArray = json_decode($result, true);
-curl_close($ch);
 
-// Siapkan data untuk digunakan dalam JavaScript
+// Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
 $jsonData = json_encode($resultArray);
 
+// Ambil timestamp dan persentase suara masuk dari data
 $timestamp = $resultArray['ts'];
 $persentaseSuaraMasuk = $resultArray['chart']['persen'];
-?>
 
+// HITUNG PERSENTASE
+$totalSuara = $resultArray['chart']['100025'] + $resultArray['chart']['100026'] + $resultArray['chart']['100027'];
+$persentasePas1 = ($resultArray['chart']['100025'] / $totalSuara) * 100;
+$persentasePas2 = ($resultArray['chart']['100026'] / $totalSuara) * 100;
+$persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
+?>
 <!-- HITUNG PERSENTASE -->
 <?php
 $totalSuara = $resultArray['chart']['100025'] + $resultArray['chart']['100026'] + $resultArray['chart']['100027'];
@@ -336,7 +358,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                     onEachFeature: function(feature, layer) {
                         var kodeProvinsi = feature.properties.kode.toString();
                         var dataProvinsi = hasilPemilu.table[kodeProvinsi];
-                        if (!dataProvinsi || dataProvinsi.persen === 0 || !dataProvinsi.status_progress) {
+                        if (!dataProvinsi || typeof dataProvinsi['100025'] === 'undefined' || typeof dataProvinsi['100026'] === 'undefined' || typeof dataProvinsi['100027'] === 'undefined' || !dataProvinsi.status_progress) {
                             var infoPemilu = "Data belum tersedia";
                             layer.bindTooltip(feature.properties.Propinsi);
                             layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
