@@ -81,6 +81,10 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 </head>
 
 <body class="homepage">
+    <div id="loadingIndicator" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+        <img src="assets/img/loading100.gif" alt="Loading..." />
+    </div>
+
     <div class="page-wrapper">
         <header id="page-header">
             <nav>
@@ -164,7 +168,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Untuk wilayah provinsi baru di Pulau Papua belum selesai digambar, mohon menunggu. Kami akan mempersiapkan untuk data dari website lain juga. ⚠️</p>
+                    <p class="mb-0 font-weight-bold">⚠️ Update untuk Peta Sebaran Suara dari KawalPemilu, KawalAmin, Kawal Pemenangan Ganjar sedang diproses, mohon menunggu. ⚠️</p>
                 </div>
             </div>
 
@@ -366,6 +370,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 
                             // Menghitung total suara di provinsi
                             var totalSuaraProvinsi = dataProvinsi['100025'] + dataProvinsi['100026'] + dataProvinsi['100027'];
+                            var totalPersenSuara = dataProvinsi.persen;
 
                             // Menghitung persentase untuk setiap paslon
                             var persenPas1 = ((dataProvinsi['100025'] / totalSuaraProvinsi) * 100).toFixed(2);
@@ -383,7 +388,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                             `;
 
                             layer.bindTooltip(feature.properties.Propinsi);
-                            layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+                            layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong><div class="progress mt-2 mb-0" style="height: 20px;"><div class="progress-bar" role="progressbar" style="width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100">${totalPersenSuara}%</div></div>${infoPemilu}`);
                         }
                     }
 
@@ -467,6 +472,10 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
         });
     </script>
 
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("loadingIndicator").style.display = 'none';
+        });
+    </script>
 
 </body>

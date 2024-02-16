@@ -358,6 +358,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 
                             // Menghitung total suara di provinsi
                             var totalSuaraProvinsi = dataProvinsi['100025'] + dataProvinsi['100026'] + dataProvinsi['100027'];
+                            var totalPersenSuara = dataProvinsi.persen;
 
                             // Menghitung persentase untuk setiap paslon
                             var persenPas1 = ((dataProvinsi['100025'] / totalSuaraProvinsi) * 100).toFixed(2);
@@ -375,7 +376,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                             `;
 
                             layer.bindTooltip(feature.properties.Propinsi);
-                            layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+                            layer.bindPopup(`<strong>${feature.properties.Propinsi} ${totalPersenSuara}</strong><br>${infoPemilu}`);
                         }
                     }
 
