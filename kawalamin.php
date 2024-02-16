@@ -83,95 +83,89 @@ $jsonData = json_encode($resultArray);
     // Data pemilu diperoleh dari PHP
     var hasilPemilu = JSON.parse('<?php echo $jsonData; ?>');
 
-    var timestamp = hasilPemilu.ts;
-    var psu = hasilPemilu.psu;
-    var chartData = hasilPemilu.chart;
-
     // Contoh: Menampilkan data ts, psu, dan chart pada konsol
-    console.log('Timestamp:', timestamp);
-    console.log('PSU:', psu);
-    console.log('Chart Data:', chartData);
+    console.log('Timestamp:', hasilPemilu);
 
     
-    function getColor(data) {
-    if (!data) return 'gray'; 
-    var pas1 = data['100025']; 
-    var pas2 = data['100026'];
-    var pas3 = data['100027'];
-    var max = Math.max(pas1, pas2, pas3);
-    if (max === pas1) return 'orange';
-    if (max === pas2) return 'blue';
-    return 'red';
-    }
+    // function getColor(data) {
+    // if (!data) return 'gray'; 
+    // var pas1 = data['100025']; 
+    // var pas2 = data['100026'];
+    // var pas3 = data['100027'];
+    // var max = Math.max(pas1, pas2, pas3);
+    // if (max === pas1) return 'orange';
+    // if (max === pas2) return 'blue';
+    // return 'red';
+    // }
 
-    fetch('geojson/indonesia-prov.geojson')
-    .then(function(response) { return response.json(); })
-    .then(function(json) {
-        L.geoJson(json, {
-            style: function(feature) {
-                var kodeProvinsi = feature.properties.kode.toString();
-                var warna = 'gray'; 
-                if (hasilPemilu.table[kodeProvinsi]) {
-                    var dataProvinsi = hasilPemilu.table[kodeProvinsi];
-                    warna = getColor(dataProvinsi); 
-                }
+    // fetch('geojson/indonesia-prov.geojson')
+    // .then(function(response) { return response.json(); })
+    // .then(function(json) {
+    //     L.geoJson(json, {
+    //         style: function(feature) {
+    //             var kodeProvinsi = feature.properties.kode.toString();
+    //             var warna = 'gray'; 
+    //             if (hasilPemilu.table[kodeProvinsi]) {
+    //                 var dataProvinsi = hasilPemilu.table[kodeProvinsi];
+    //                 warna = getColor(dataProvinsi); 
+    //             }
                 
-                return {
-                    color: 'white', 
-                    weight: 1,
-                    fillColor: warna, 
-                    fillOpacity: 0.8 
-                };
-            },
-            onEachFeature: function(feature, layer) {
-                var kodeProvinsi = feature.properties.kode.toString();
-                var data = hasilPemilu.table[kodeProvinsi];
-                if (data) {
+    //             return {
+    //                 color: 'white', 
+    //                 weight: 1,
+    //                 fillColor: warna, 
+    //                 fillOpacity: 0.8 
+    //             };
+    //         },
+    //         onEachFeature: function(feature, layer) {
+    //             var kodeProvinsi = feature.properties.kode.toString();
+    //             var data = hasilPemilu.table[kodeProvinsi];
+    //             if (data) {
                     
-                    var pas1Formatted = formatNumber(data['100025']);
-                    var pas2Formatted = formatNumber(data['100026']);
-                    var pas3Formatted = formatNumber(data['100027']);
+    //                 var pas1Formatted = formatNumber(data['100025']);
+    //                 var pas2Formatted = formatNumber(data['100026']);
+    //                 var pas3Formatted = formatNumber(data['100027']);
 
-                    // Menambahkan tag img untuk logo paslon
-                    var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
-                    var logoPaslon2 = `<img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">`;
-                    var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
+    //                 // Menambahkan tag img untuk logo paslon
+    //                 var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
+    //                 var logoPaslon2 = `<img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">`;
+    //                 var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
 
-                    // Memasukkan tag img ke dalam infoPemilu
-                    var infoPemiluWithLogo = `<b>${logoPaslon1} ANIES - MUHAIMIN: ${pas1Formatted} Suara<br>${logoPaslon2} PRABOWO - GIBRAN: ${pas2Formatted} Suara<br>${logoPaslon3} GANJAR - MAHFUD: ${pas3Formatted} Suara</b>`;
+    //                 // Memasukkan tag img ke dalam infoPemilu
+    //                 var infoPemiluWithLogo = `<b>${logoPaslon1} ANIES - MUHAIMIN: ${pas1Formatted} Suara<br>${logoPaslon2} PRABOWO - GIBRAN: ${pas2Formatted} Suara<br>${logoPaslon3} GANJAR - MAHFUD: ${pas3Formatted} Suara</b>`;
 
-                    layer.bindTooltip(feature.properties.Propinsi);
-                    // Menggunakan infoPemiluWithLogo sebagai konten popup
-                    layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemiluWithLogo}`);
-                }
-            }
+    //                 layer.bindTooltip(feature.properties.Propinsi);
+    //                 // Menggunakan infoPemiluWithLogo sebagai konten popup
+    //                 layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemiluWithLogo}`);
+    //             }
+    //         }
 
-        }).addTo(map);
-    });
+    //     }).addTo(map);
+    // });
 
-    // Add a legend for overseas data
-    var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
-    if (overseasData) {
-        var legend = L.control({position: 'bottomright'});
+    // // Add a legend for overseas data
+    // var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
+    // if (overseasData) {
+    //     var legend = L.control({position: 'bottomright'});
 
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'card p-2 info legend');
+    //     legend.onAdd = function (map) {
+    //         var div = L.DomUtil.create('div', 'card p-2 info legend');
 
-            var pas1Formatted = formatNumber(overseasData["100025"]);
-            var pas2Formatted = formatNumber(overseasData["100026"]);
-            var pas3Formatted = formatNumber(overseasData["100027"]);
+    //         var pas1Formatted = formatNumber(overseasData["100025"]);
+    //         var pas2Formatted = formatNumber(overseasData["100026"]);
+    //         var pas3Formatted = formatNumber(overseasData["100027"]);
 
-            div.innerHTML += `<p class="mb-0"><b>LUAR NEGERI</b><br>ANIES - MUHAIMIN: ${pas1Formatted} Suara<br>PRABOWO - GIBRAN: ${pas2Formatted} Suara<br>GANJAR - MAHFUD: ${pas3Formatted} Suara</p>`;
-            return div;
-        };
+    //         div.innerHTML += `<p class="mb-0"><b>LUAR NEGERI</b><br>ANIES - MUHAIMIN: ${pas1Formatted} Suara<br>PRABOWO - GIBRAN: ${pas2Formatted} Suara<br>GANJAR - MAHFUD: ${pas3Formatted} Suara</p>`;
+    //         return div;
+    //     };
 
-        legend.addTo(map);
-    }
+    //     legend.addTo(map);
+    // }
 
 
-    function formatNumber(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    // function formatNumber(number) {
+    //     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // }
 </script>
 
 </body>

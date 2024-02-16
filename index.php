@@ -301,17 +301,18 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 
 
         function getColor(data) {
-            if (!data) return 'gray';
+            if (!data) return 'grey';
             var pas1 = data['100025'];
             var pas2 = data['100026'];
             var pas3 = data['100027'];
             var max = Math.max(pas1, pas2, pas3);
             if (max === pas1) return 'orange';
             if (max === pas2) return 'blue';
-            return 'red';
+            if (max === pas3) return 'red';
+            return 'grey';
         }
 
-        fetch('geojson/indonesia-prov.geojson')
+        fetch('geojson/indonesia-prov1001.geojson')
             .then(function(response) {
                 return response.json();
             })
@@ -335,7 +336,11 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                     onEachFeature: function(feature, layer) {
                         var kodeProvinsi = feature.properties.kode.toString();
                         var dataProvinsi = hasilPemilu.table[kodeProvinsi];
-                        if (dataProvinsi) {
+                        if (!dataProvinsi || dataProvinsi.persen === 0 || !dataProvinsi.status_progress) {
+                            var infoPemilu = "Data belum tersedia";
+                            layer.bindTooltip(feature.properties.Propinsi);
+                            layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+                        } else if (dataProvinsi) {
 
                             // Menghitung total suara di provinsi
                             var totalSuaraProvinsi = dataProvinsi['100025'] + dataProvinsi['100026'] + dataProvinsi['100027'];
