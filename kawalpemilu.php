@@ -1,30 +1,10 @@
 <?php
-// Tentukan lokasi dan nama file cache
-$cacheFile = 'data-kawalpemilu.json';
-$cacheLifetime = 600; // Durasi cache dalam detik (10 menit)
 
-// Fungsi untuk memeriksa validitas cache
-function isCacheValid($file, $lifetime) {
-    return file_exists($file) && (time() - filemtime($file) < $lifetime);
-}
+// Lokasi file JSON yang berisi data dan timestamp
+$combinedDataFile = 'data/data-prov-kawalpemilu.json';
 
-// Cek apakah cache valid
-if (!isCacheValid($cacheFile, $cacheLifetime)) {
-    // Jika cache tidak valid, lakukan request ke API
-    $url = "https://kp24-fd486.et.r.appspot.com/h?id=";
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    
-    // Simpan data baru ke cache
-    file_put_contents($cacheFile, $result);
-} else {
-    // Jika cache masih valid, gunakan data dari cache
-    $result = file_get_contents($cacheFile);
-}
+// Baca data dari file JSON
+$result = file_get_contents($combinedDataFile);
 
 // Decode data JSON menjadi array
 $resultArray = json_decode($result, true);
@@ -36,13 +16,6 @@ $jsonData = json_encode($resultArray['result']['aggregated']);
 date_default_timezone_set('Asia/Jakarta'); 
 $timestamp = date('Y-m-d H:i:s');
 
-// $persentaseSuaraMasuk = $resultArray['chart']['persen'];
-
-// // HITUNG PERSENTASE
-// $totalSuara = $resultArray['chart']['100025'] + $resultArray['chart']['100026'] + $resultArray['chart']['100027'];
-// $persentasePas1 = ($resultArray['chart']['100025'] / $totalSuara) * 100;
-// $persentasePas2 = ($resultArray['chart']['100026'] / $totalSuara) * 100;
-// $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 ?>
 
 <!DOCTYPE html>
