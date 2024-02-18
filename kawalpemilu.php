@@ -488,7 +488,7 @@ $timestamp = date('Y-m-d H:i:s');
         
 
         // Memuat data dari file JSON dan menjalankan fungsi penghitungan
-        fetch('data-kawalpemilu.json')
+        fetch('data/data-prov-kawalpemilu.json')
             .then(response => response.json())
             .then(data => {
                 const totals = calculateAndDisplayTotalPercentage(data.result);
