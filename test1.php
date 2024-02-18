@@ -1,61 +1,16 @@
 <?php
-// Tentukan lokasi dan nama file cache
-$cacheFile = 'data/data-city-kawalpemilu.json';
-$cacheLifetime = 600; // Durasi cache dalam detik (10 menit)
-$dataFile = 'data/data-prov-kpu.json'; // File sumber data kode provinsi
+// Lokasi file JSON yang berisi data dan timestamp
+$combinedDataFile = 'data/data-city-kawalpemilu.json';
 
-// Fungsi untuk memeriksa validitas cache
-function isCacheValid($file, $lifetime) {
-    return file_exists($file) && (time() - filemtime($file) < $lifetime);
-}
+// Baca data dari file JSON
+$result = file_get_contents($combinedDataFile);
 
-// Fungsi untuk melakukan request ke API dan mengembalikan data
-function fetchApiData($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true); // Decode dan kembalikan sebagai array
-}
-
-// Baca dan ekstrak daftar kode provinsi dari data-kpu.json
-$dataContents = file_get_contents($dataFile);
-$dataArray = json_decode($dataContents, true);
-$provinceIds = array_keys($dataArray['table']); // Dapatkan daftar kode provinsi
-
-// Cek apakah cache valid
-if (!isCacheValid($cacheFile, $cacheLifetime)) {
-    // Jika cache tidak valid, lakukan request ke API
-    $combinedData = []; // Array untuk menyimpan data gabungan
-
-    foreach ($provinceIds as $id) {
-        $url = "https://kp24-fd486.et.r.appspot.com/h?id=$id";
-        $data = fetchApiData($url);
-        if (!empty($data) && isset($data['result']['aggregated'])) {
-            // Langsung gabungkan data berdasarkan ID lokasi
-            foreach ($data['result']['aggregated'] as $locId => $entries) {
-                if (!isset($combinedData[$locId])) {
-                    $combinedData[$locId] = [];
-                }
-                // Asumsikan struktur data dari setiap API konsisten dan dapat langsung digabungkan
-                $combinedData[$locId] = array_merge($combinedData[$locId], $entries);
-            }
-        }
-    }
-
-    // Simpan data gabungan ke cache
-    file_put_contents($cacheFile, json_encode(['table' => $combinedData]));
-} else {
-    // Jika cache masih valid, gunakan data dari cache
-    $combinedData = json_decode(file_get_contents($cacheFile), true);
-}
+// Decode data JSON menjadi array
+$resultArray = json_decode($result, true);
 
 // Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
-$jsonData = json_encode($combinedData);
+$jsonData = json_encode($resultArray);
 ?>
-
 
 <!DOCTYPE html>
 
@@ -332,16 +287,6 @@ $jsonData = json_encode($combinedData);
         // Data pemilu diperoleh dari PHP
         var hasilPemilu = JSON.parse('<?php echo $jsonData; ?>');
 
-        var timestamp = hasilPemilu.ts;
-        var psu = hasilPemilu.psu;
-        var chartData = hasilPemilu.chart;
-
-        // Contoh: Menampilkan data ts, psu, dan chart pada konsol
-        console.log('Timestamp:', timestamp);
-        console.log('PSU:', psu);
-        console.log('Chart Data:', chartData);
-
-
         function getColor(data) {
             if (!data) return 'grey';
             var pas1 = data.pas1;
@@ -372,9 +317,6 @@ $jsonData = json_encode($combinedData);
                             var dataProvinsi = hasilPemilu.table[kodeProvinsi][0];
                             warna = getColor(dataProvinsi); // Mengambil warna berdasarkan data provinsi
                         } 
-
-                        console.log('1',hasilPemilu.table[kodeProvinsi]);
-                        // console.log('2',hasilPemilu[kodeProvinsi].length > 0);
 
                         return {
                             color: 'white',

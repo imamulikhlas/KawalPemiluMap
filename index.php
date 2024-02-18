@@ -44,6 +44,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
     <link rel="stylesheet" href="assets/css/custom.css" type="text/css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
@@ -252,6 +253,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.js"></script>
 
     <script>
         // Lokasi awal dan zoom level
@@ -323,7 +325,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                 return response.json();
             })
             .then(function(json) {
-                L.geoJson(json, {
+                var geoJsonLayer = L.geoJson(json, {
                     style: function(feature) {
                         var kodeProvinsi = feature.properties.kode.toString();
                         var warna = 'gray';
@@ -382,6 +384,32 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 
 
                 }).addTo(map);
+                
+
+                var searchControl = new L.Control.Search({
+                    layer: geoJsonLayer,
+                    position: 'topright',
+                    propertyName: 'Propinsi', 
+                    moveToLocation: function(latlng, title, map) {
+                        map.flyTo(latlng, 10, {
+                            animate: true,
+                            duration: 0.5
+                        });
+
+                        map.once('zoomend', function() {
+                            var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
+                                return layer.feature.properties.Propinsi === title;
+                            });
+
+                            if (matchingLayer) {
+                                matchingLayer.fire('click');
+                            }
+                        });
+                    }
+                });
+
+                searchControl.addTo(map);
+
             });
 
         // Add a legend for overseas data
