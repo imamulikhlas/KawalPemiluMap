@@ -331,12 +331,26 @@ $jsonDataKota = json_encode($resultArrayKota);
     function toggleMode() {
         if (currentMode === 'provinsi') {
             currentMode = 'kota';
-            // Ganti sumber data ke hasilPemiluKota
-            updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota);
+            modeToggleButton.innerHTML = 'LIHAT DATA PER PROV';
+            // Menghapus legenda
+            if (window.legend) {
+                map.removeControl(window.legend);
+                window.legend = null;
+            }
+            // Memperbarui peta dengan data kota (tanpa legenda)
+            updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota).then(() => {
+            });
         } else {
             currentMode = 'provinsi';
-            // Ganti sumber data ke hasilPemiluProvinsi
-            updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi);
+            modeToggleButton.innerHTML = 'LIHAT DATA PER KOTA';
+            // Menghapus legenda
+            if (window.legend) {
+                map.removeControl(window.legend);
+                window.legend = null;
+            }
+            updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi).then(() => {
+                showLegend(hasilPemiluProvinsi);
+            });
         }
     }
 
@@ -428,6 +442,9 @@ $jsonDataKota = json_encode($resultArrayKota);
                     }
                 }
             }).addTo(map);
+            
+            // Tampilkan legenda hanya untuk mode 'provinsi'
+            showLegend(data);
 
             initializeSearchControl(activeLayer);
         });
@@ -437,13 +454,13 @@ $jsonDataKota = json_encode($resultArrayKota);
     var searchControl; 
     function initializeSearchControl(layer) {
     if (searchControl) {
-        map.removeControl(searchControl); // Hapus kontrol pencarian lama jika ada
+        map.removeControl(searchControl); 
     }
 
     searchControl = new L.Control.Search({
         layer: layer,
         position: 'topright',
-        propertyName: currentMode === 'provinsi' ? 'Propinsi' : 'NAME_2', // Sesuaikan berdasarkan properti yang tersedia di GeoJSON Anda
+        propertyName: currentMode === 'provinsi' ? 'Propinsi' : 'NAME_2', 
         initial: false,
         moveToLocation: function(latlng, title, map) {
             map.flyTo(latlng, 10, {
@@ -459,7 +476,6 @@ $jsonDataKota = json_encode($resultArrayKota);
 
                 // Jika layer yang cocok ditemukan, buka popupnya
                 if (matchingLayer) {
-                    // Memeriksa apakah layer memiliki metode untuk membuka popup
                     if (matchingLayer.openPopup) {
                         matchingLayer.openPopup();
                     }
@@ -469,7 +485,6 @@ $jsonDataKota = json_encode($resultArrayKota);
     }).addTo(map);
 }
 
-
     // Menambahkan control untuk mengganti mode
     var modeToggleControl = L.Control.extend({
         options: {
@@ -477,7 +492,7 @@ $jsonDataKota = json_encode($resultArrayKota);
         },
         onAdd: function(map) {
             var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-            controlDiv.innerHTML = '<button onclick="toggleMode()" style="background-color: #fff; border: none; cursor: pointer; width: 60px; height: 30px;">LIHAT PER KOTA</button>';
+            controlDiv.innerHTML = '<button id="modeToggleButton" onclick="toggleMode()" style="background-color: #fff; border: none; cursor: pointer; width: 80px; height: 40px;">LIHAT PER KOTA</button>';
             controlDiv.title = "Ganti Mode Tampilan";
             return controlDiv;
         }
@@ -488,6 +503,46 @@ $jsonDataKota = json_encode($resultArrayKota);
     // Memanggil fungsi updateMap untuk memuat mode awal dengan data provinsi
     updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi);
 
+    //legend Luar Negri
+    function showLegend(data) {
+        var legend = L.control({
+            position: 'bottomright'
+        });
+
+        legend.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'card p-2 info legend');
+
+            if (currentMode === 'provinsi') {
+                // Mode Provinsi: Tampilkan legenda dengan data
+                var overseasData = data[99] ? data[99] : null;
+                if (overseasData) {
+                    var pas1Formatted = formatNumber(overseasData[0].pas1);
+                    var pas2Formatted = formatNumber(overseasData[0].pas2);
+                    var pas3Formatted = formatNumber(overseasData[0].pas3);
+
+                    var warnaPas1 = 'orange';
+                    var warnaPas2 = 'blue';
+                    var warnaPas3 = 'red';
+
+                    div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
+                    div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
+                    div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
+                }
+            } else {
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: orange;"></span><b>ANIES - MUHAIMIN</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: blue;"></span><b>PRABOWO - GIBRAN</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: red;"></span><b>GANJAR - MAHFUD</b></div>`;
+            }
+
+            return div;
+        };
+
+        window.legend = legend; 
+        legend.addTo(map);
+    }
+
+
+    
     function formatNumber(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }

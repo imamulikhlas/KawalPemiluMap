@@ -1,21 +1,35 @@
 <?php
 
 // Lokasi file JSON yang berisi data dan timestamp
-$combinedDataFile = 'data/data-prov-kawalpemilu.json';
+$dataProvinsi = 'data/data-prov-kawalpemilu.json';
 
 // Baca data dari file JSON
-$result = file_get_contents($combinedDataFile);
+$resultProvinsi = file_get_contents($dataProvinsi);
 
 // Decode data JSON menjadi array
-$resultArray = json_decode($result, true);
+$resultArrayProvinsi = json_decode($resultProvinsi, true);
 
 // Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
-$jsonData = json_encode($resultArray['result']['aggregated']);
+$jsonDataProv = json_encode($resultArrayProvinsi['result']['aggregated']);
 
 // Ambil timestamp dan persentase suara masuk dari data
 date_default_timezone_set('Asia/Jakarta'); 
 $timestamp = date('Y-m-d H:i:s');
 
+?>
+
+<?php
+// Lokasi file JSON yang berisi data dan timestamp
+$dataKota = 'data/data-city-kawalpemilu.json';
+
+// Baca data dari file JSON
+$resultKota = file_get_contents($dataKota);
+
+// Decode data JSON menjadi array
+$resultArrayKota = json_decode($resultKota, true);
+
+// Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
+$jsonDataKota = json_encode($resultArrayKota);
 ?>
 
 <!DOCTYPE html>
@@ -157,7 +171,7 @@ $timestamp = date('Y-m-d H:i:s');
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Update untuk Peta Sebaran Suara dari KawalPemilu, KawalAmin, Kawal Pemenangan Ganjar sedang diproses, mohon menunggu. ⚠️</p>
+                    <p class="mb-0 font-weight-bold">⚠️ Update data sudah bisa dibuka berdasarkan data Per Kota/Kabupaten. Silahkan akses dan jadikan web ini referensi kamu dalam mengawal pemilu! ⚠️</p>
                 </div>
             </div>
 
@@ -266,203 +280,272 @@ $timestamp = date('Y-m-d H:i:s');
     <script src="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.js"></script>
 
     <script>
-        // Lokasi awal dan zoom level
-        var awalLokasi = [-2.548926, 118.0148634];
-        var awalZoom = 5;
+    // Lokasi awal dan zoom level
+    var awalLokasi = [-2.548926, 118.0148634];
+    var awalZoom = 5;
 
-        var map = L.map('mapid', {
-            fullscreenControl: true,
-            fullscreenControlOptions: {
-                position: 'topleft'
+    var map = L.map('mapid', {
+        fullscreenControl: true,
+        fullscreenControlOptions: {
+            position: 'topleft'
+        }
+    }).setView(awalLokasi, awalZoom);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Fungsi untuk kembali ke lokasi awal
+    var kembaliKeAwal = function() {
+        map.flyTo(awalLokasi, awalZoom);
+    };
+
+    // Membuat control kustom
+    var kustomControl = L.Control.extend({
+        options: {
+            position: 'topleft'
+        },
+
+        onAdd: function(map) {
+            var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            controlDiv.innerHTML = '<button style="background-color: #fff; border: none; cursor: pointer; width: 30px; height: 30px; text-align: center;"><i class="fa fa-home"></i></button>';
+            controlDiv.title = "Kembali ke awal";
+            controlDiv.onclick = kembaliKeAwal;
+            return controlDiv;
+        }
+    });
+
+    map.addControl(new kustomControl());
+
+    // Data pemilu diperoleh dari PHP untuk provinsi
+    var hasilPemiluProvinsi = JSON.parse('<?php echo $jsonDataProv; ?>');
+
+    // Data pemilu untuk kota akan diinisialisasi ketika mode diubah
+    var hasilPemiluKota = JSON.parse('<?php echo $jsonDataKota; ?>');
+
+    // Variabel untuk menyimpan layer aktif dan mode saat ini
+    var activeLayer;
+    var currentMode = 'provinsi'; // Mode awal
+
+    // Fungsi untuk mengganti mode dan memperbarui peta
+    function toggleMode() {
+        if (currentMode === 'provinsi') {
+            currentMode = 'kota';
+            modeToggleButton.innerHTML = 'LIHAT DATA PER PROV';
+            // Menghapus legenda
+            if (window.legend) {
+                map.removeControl(window.legend);
+                window.legend = null;
             }
-        }).setView(awalLokasi, awalZoom);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Tambahkan fungsi untuk kembali ke lokasi awal
-        var kembaliKeAwal = function() {
-            map.flyTo(awalLokasi, awalZoom);
-        };
-
-        // Membuat control kustom
-        var kustomControl = L.Control.extend({
-            options: {
-                position: 'topleft'
-            },
-
-            onAdd: function(map) {
-                var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                controlDiv.innerHTML = '<button style="background-color: #fff; border: none; cursor: pointer; width: 30px; height: 30px; text-align: center;"><i class="fa fa-home"></i></button>';
-                controlDiv.title = "Kembali ke awal";
-                controlDiv.onclick = function() {
-                    kembaliKeAwal();
-                }
-                return controlDiv;
+            // Memperbarui peta dengan data kota (tanpa legenda)
+            updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota).then(() => {
+            });
+        } else {
+            currentMode = 'provinsi';
+            modeToggleButton.innerHTML = 'LIHAT DATA PER KOTA';
+            // Menghapus legenda
+            if (window.legend) {
+                map.removeControl(window.legend);
+                window.legend = null;
             }
-        });
+            updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi).then(() => {
+                showLegend(hasilPemiluProvinsi);
+            });
+        }
+    }
 
-        map.addControl(new kustomControl());
+    function getColor(data) {
+        if (!data) return 'grey'; // Jika tidak ada data, kembalikan warna abu-abu
+        var pas1 = data.pas1 || 0;
+        var pas2 = data.pas2 || 0;
+        var pas3 = data.pas3 || 0;
 
-        // Data pemilu diperoleh dari PHP
-        var hasilPemilu = JSON.parse('<?php echo $jsonData; ?>');
-
-        var timestamp = hasilPemilu.ts;
-        var psu = hasilPemilu.psu;
-        var chartData = hasilPemilu.chart;
-
-        // Contoh: Menampilkan data ts, psu, dan chart pada konsol
-        console.log('Timestamp:', timestamp);
-        console.log('PSU:', psu);
-        console.log('Chart Data:', chartData);
-
-
-        function getColor(data) {
-            if (!data) return 'grey';
-            var pas1 = data.pas1;
-            var pas2 = data.pas2;
-            var pas3 = data.pas3;
-
-            if (pas1 === 0 && pas2 === 0 && pas3 === 0) {
-                return 'grey';
-            }
-
-            var max = Math.max(pas1, pas2, pas3);
-            if (max === pas1) return 'orange';
-            if (max === pas2) return 'blue';
-            if (max === pas3) return 'red';
+        // Jika semua paslon memiliki suara 0, kembalikan warna abu-abu
+        if (pas1 === 0 && pas2 === 0 && pas3 === 0) {
             return 'grey';
         }
 
-        fetch('geojson/indonesia-prov1001.geojson')
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(json) {
-                var geoJsonLayer = L.geoJson(json, {
-                    style: function(feature) {
-                        var kodeProvinsi = feature.properties.kode.toString();
-                        var warna = 'gray';
-                        if (hasilPemilu[kodeProvinsi]) {
-                            var dataProvinsi = hasilPemilu[kodeProvinsi][0];
-                            warna = getColor(dataProvinsi);
-                        }
+        // Tentukan paslon dengan suara terbanyak
+        var max = Math.max(pas1, pas2, pas3);
+        if (max === pas1) return 'orange'; // Warna untuk paslon 1
+        if (max === pas2) return 'blue'; // Warna untuk paslon 2
+        if (max === pas3) return 'red'; // Warna untuk paslon 3
+        return 'grey'; // Default jika ada kondisi lain yang tidak terpenuhi
+    }
 
-                        return {
-                            color: 'white',
-                            weight: 1,
-                            fillColor: warna,
-                            fillOpacity: 0.8
-                        };
-                    },
-                    onEachFeature: function(feature, layer) {
-                        var kodeProvinsi = feature.properties.kode.toString();
-                        var dataProvinsi = hasilPemilu[kodeProvinsi][0];
-                        if (dataProvinsi.pas1 + dataProvinsi.pas2 + dataProvinsi.pas3 === 0) {
+
+    // Fungsi untuk memperbarui peta berdasarkan mode saat ini
+    function updateMap(geojsonPath, data) {
+        if (activeLayer) {
+            map.removeLayer(activeLayer);
+        }
+
+        fetch(geojsonPath)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(json) {
+            activeLayer = L.geoJson(json, {
+                style: function(feature) {
+                    var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
+                    var dataItem = (currentMode === 'provinsi' ? data[kode] : data.table[kode]) || [];
+                    var warna = dataItem.length > 0 ? getColor(dataItem[0]) : 'grey';
+                    return {
+                        color: 'white',
+                        weight: 1,
+                        fillColor: warna,
+                        fillOpacity: 0.8
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
+                    var dataProvinsi = (currentMode === 'provinsi' ? data[kode] : data.table[kode]) || [];
+
+                    if (dataProvinsi.length > 0) {
+                        var dataProvinsiItem = dataProvinsi[0];
+                        if (dataProvinsiItem.pas1 + dataProvinsiItem.pas2 + dataProvinsiItem.pas3 === 0) {
                             var infoPemilu = "Data belum tersedia";
-                            layer.bindTooltip(feature.properties.Propinsi);
-                            layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
-                        } else if (dataProvinsi) {
-
-                            // Menghitung total suara di provinsi
-                            var totalSuaraProvinsi = dataProvinsi.pas1 + dataProvinsi.pas2 + dataProvinsi.pas3;
+                            layer.bindTooltip(feature.properties.Propinsi || feature.properties.NAME_2);
+                            layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi || feature.properties.NAME_2}</strong><br>${infoPemilu}`);
+                        } else {
+                            // Menghitung total suara di provinsi atau kota
+                            var totalSuara = dataProvinsiItem.pas1 + dataProvinsiItem.pas2 + dataProvinsiItem.pas3;
 
                             // Menghitung persentase untuk setiap paslon
-                            var persenPas1 = ((dataProvinsi.pas1 / totalSuaraProvinsi) * 100).toFixed(2);
-                            var persenPas2 = ((dataProvinsi.pas2 / totalSuaraProvinsi) * 100).toFixed(2);
-                            var persenPas3 = ((dataProvinsi.pas3 / totalSuaraProvinsi) * 100).toFixed(2);
+                            var persenPas1 = ((dataProvinsiItem.pas1 / totalSuara) * 100).toFixed(2);
+                            var persenPas2 = ((dataProvinsiItem.pas2 / totalSuara) * 100).toFixed(2);
+                            var persenPas3 = ((dataProvinsiItem.pas3 / totalSuara) * 100).toFixed(2);
 
-                            var totalTps = dataProvinsi.totalTps;
-                            var totalCompletedTps = dataProvinsi.totalCompletedTps;
+                            var totalTps = dataProvinsiItem.totalTps;
+                            var totalCompletedTps = dataProvinsiItem.totalCompletedTps;
 
                             // Menghitung persentase TPS yang telah selesai
                             var totalPersenSuara = (totalCompletedTps / totalTps) * 100;
                             totalPersenSuara = totalTps > 0 ? totalPersenSuara.toFixed(2) : 0;
 
-                            // Menambahkan tag img untuk logo paslon
-                            var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
-                            var logoPaslon2 = `<img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">`;
-                            var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
                             var infoPemilu = `
-                                ${logoPaslon1} ANIES - MUHAIMIN: ${formatNumber(dataProvinsi.pas1)}  (${persenPas1}%)<br>
-                                ${logoPaslon2} PRABOWO - GIBRAN: ${formatNumber(dataProvinsi.pas2)}  (${persenPas2}%)<br>
-                                ${logoPaslon3} GANJAR - MAHFUD: ${formatNumber(dataProvinsi.pas3)}  (${persenPas3}%) 
-                            `;
+                                <img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">ANIES - MUHAIMIN: ${formatNumber(dataProvinsiItem.pas1)}  (${persenPas1}%)<br>
+                                <img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">PRABOWO - GIBRAN: ${formatNumber(dataProvinsiItem.pas2)}  (${persenPas2}%)<br>
+                                <img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">GANJAR - MAHFUD: ${formatNumber(dataProvinsiItem.pas3)}  (${persenPas3}%)`;
 
-                            layer.bindTooltip(feature.properties.Propinsi);
+                            layer.bindTooltip(feature.properties.Propinsi || feature.properties.NAME_2);
                             layer.bindPopup(`
-                            <strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong>
-                            <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
-                                <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
-                                <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
-                                    ${totalPersenSuara}% Suara Masuk
+                                <strong style="font-size:16px !important;">${feature.properties.Propinsi || feature.properties.NAME_2}</strong>
+                                <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
+                                    <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
+                                        ${totalPersenSuara}% Suara Masuk
+                                    </div>
                                 </div>
-                            </div>
-                            ${infoPemilu}`);
-
+                                ${infoPemilu}`);
                         }
                     }
-                }).addTo(map);
+                }
+            }).addTo(map);
+            
+            // Tampilkan legenda hanya untuk mode 'provinsi'
+            showLegend(data);
 
-                var searchControl = new L.Control.Search({
-                    layer: geoJsonLayer,
-                    position: 'topright',
-                    propertyName: 'Propinsi',
-                    moveToLocation: function(latlng, title, map) {
-                        map.flyTo(latlng, 10, {
-                            animate: true,
-                            duration: 0.5
-                        });
+            initializeSearchControl(activeLayer);
+        });
 
-                        map.once('zoomend', function() {
-                            var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
-                                return layer.feature.properties.Propinsi === title;
-                            });
+    }
 
-                            if (matchingLayer) {
-                                matchingLayer.fire('click');
-                            }
-                        });
-                    }
+    var searchControl; 
+    function initializeSearchControl(layer) {
+    if (searchControl) {
+        map.removeControl(searchControl); 
+    }
+
+    searchControl = new L.Control.Search({
+        layer: layer,
+        position: 'topright',
+        propertyName: currentMode === 'provinsi' ? 'Propinsi' : 'NAME_2', 
+        initial: false,
+        moveToLocation: function(latlng, title, map) {
+            map.flyTo(latlng, 10, {
+                animate: true,
+                duration: 0.5
+            });
+
+            map.once('zoomend', function() {
+                // Temukan layer yang cocok berdasarkan judul (nama) yang dipilih
+                var matchingLayer = layer.getLayers().find(function(layer) {
+                    return layer.feature.properties[currentMode === 'provinsi' ? 'Propinsi' : 'NAME_2'] === title;
                 });
 
-                searchControl.addTo(map);
+                // Jika layer yang cocok ditemukan, buka popupnya
+                if (matchingLayer) {
+                    if (matchingLayer.openPopup) {
+                        matchingLayer.openPopup();
+                    }
+                }
             });
-
-
-        // Add a legend for overseas data
-        var overseasData = hasilPemilu[99] ? hasilPemilu[99] : null;
-        if (overseasData) {
-            var legend = L.control({
-                position: 'bottomright'
-            });
-
-            legend.onAdd = function(map) {
-                var div = L.DomUtil.create('div', 'card p-2 info legend');
-
-                var pas1Formatted = formatNumber(overseasData[0].pas1);
-                var pas2Formatted = formatNumber(overseasData[0].pas2);
-                var pas3Formatted = formatNumber(overseasData[0].pas3);
-
-                var warnaPas1 = 'orange';
-                var warnaPas2 = 'blue';
-                var warnaPas3 = 'red';
-
-                div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
-                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
-                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
-
-                return div;
-            };
-
-            legend.addTo(map);
         }
+    }).addTo(map);
+}
 
-
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // Menambahkan control untuk mengganti mode
+    var modeToggleControl = L.Control.extend({
+        options: {
+            position: 'topright'
+        },
+        onAdd: function(map) {
+            var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            controlDiv.innerHTML = '<button id="modeToggleButton" onclick="toggleMode()" style="background-color: #fff; border: none; cursor: pointer; width: 80px; height: 40px;">LIHAT PER KOTA</button>';
+            controlDiv.title = "Ganti Mode Tampilan";
+            return controlDiv;
         }
+    });
+
+    map.addControl(new modeToggleControl());
+
+    // Memanggil fungsi updateMap untuk memuat mode awal dengan data provinsi
+    updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi);
+
+    //legend Luar Negri
+    function showLegend(data) {
+        var legend = L.control({
+            position: 'bottomright'
+        });
+
+        legend.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'card p-2 info legend');
+
+            if (currentMode === 'provinsi') {
+                // Mode Provinsi: Tampilkan legenda dengan data
+                var overseasData = data[99] ? data[99] : null;
+                if (overseasData) {
+                    var pas1Formatted = formatNumber(overseasData[0].pas1);
+                    var pas2Formatted = formatNumber(overseasData[0].pas2);
+                    var pas3Formatted = formatNumber(overseasData[0].pas3);
+
+                    var warnaPas1 = 'orange';
+                    var warnaPas2 = 'blue';
+                    var warnaPas3 = 'red';
+
+                    div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
+                    div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
+                    div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
+                }
+            } else {
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: orange;"></span><b>ANIES - MUHAIMIN</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: blue;"></span><b>PRABOWO - GIBRAN</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: red;"></span><b>GANJAR - MAHFUD</b></div>`;
+            }
+
+            return div;
+        };
+
+        window.legend = legend; 
+        legend.addTo(map);
+    }
+
+
+    
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
     </script>
 
     <!-- Hitung Persentase Suara Masuk -->
