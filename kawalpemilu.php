@@ -385,7 +385,7 @@ $jsonDataKota = json_encode($resultArrayKota);
             activeLayer = L.geoJson(json, {
                 style: function(feature) {
                     var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
-                    var dataItem = (currentMode === 'provinsi' ? data[kode] : data.table[kode]) || [];
+                    var dataItem = (currentMode === 'provinsi' ? data[kode] : data[kode]) || [];
                     var warna = dataItem.length > 0 ? getColor(dataItem[0]) : 'grey';
                     return {
                         color: 'white',
@@ -396,7 +396,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                 },
                 onEachFeature: function(feature, layer) {
                     var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
-                    var dataProvinsi = (currentMode === 'provinsi' ? data[kode] : data.table[kode]) || [];
+                    var dataProvinsi = (currentMode === 'provinsi' ? data[kode] : data[kode]) || [];
 
                     if (dataProvinsi.length > 0) {
                         var dataProvinsiItem = dataProvinsi[0];

@@ -2,7 +2,7 @@
 date_default_timezone_set('Asia/Jakarta');
 // Tentukan lokasi dan nama file data gabungan
 $combinedDataFile = 'bantukawalpemilu.online/data/data-city-kawalpemilu.json';
-$dataFile = 'bantukawalpemilu.online/data-kpu.json'; // File sumber data kode provinsi
+$dataFile = 'bantukawalpemilu.online/data/data-prov-kpu.json'; // File sumber data kode provinsi
 
 // Fungsi untuk melakukan request ke API dan mengembalikan data
 function fetchApiData($url) {
