@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
 // Tentukan lokasi dan nama file data gabungan
 $combinedDataFile = 'bantukawalpemilu.online/data/data-prov-kpu.json';
 $dataFile = 'https://sirekap-obj-data.kpu.go.id/pemilu/hhcw/ppwp.json'; // URL File sumber data kode provinsi
