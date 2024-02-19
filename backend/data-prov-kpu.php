@@ -1,7 +1,7 @@
 <?php
 // Tentukan lokasi dan nama file data gabungan
 $combinedDataFile = 'bantukawalpemilu.online/data/data-prov-kpu.json';
-$dataFile = 'https://bantukawalpemilu.online/data-kpu.json'; // URL File sumber data kode provinsi
+$dataFile = 'https://sirekap-obj-data.kpu.go.id/pemilu/hhcw/ppwp.json'; // URL File sumber data kode provinsi
 
 // Fungsi untuk melakukan request ke API dan mengembalikan data
 function fetchApiData($url) {
