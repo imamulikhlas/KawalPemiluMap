@@ -1,62 +1,36 @@
 <?php
-// Tentukan lokasi dan nama file cache
-$cacheFile = 'data-kpu-gabungan.json';
-$cacheLifetime = 600; // Durasi cache dalam detik (10 menit)
-$dataFile = 'data-kpu.json'; // File sumber data kode provinsi
 
-// Fungsi untuk memeriksa validitas cache
-function isCacheValid($file, $lifetime) {
-    return file_exists($file) && (time() - filemtime($file) < $lifetime);
-}
+// Lokasi file JSON yang berisi data dan timestamp
+$dataProvinsi = 'data/data-prov-kawalpemilu.json';
 
-// Fungsi untuk melakukan request ke API dan mengembalikan data
-function fetchApiData($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true); // Decode dan kembalikan sebagai array
-}
+// Baca data dari file JSON
+$resultProvinsi = file_get_contents($dataProvinsi);
 
-// Baca dan ekstrak daftar kode provinsi dari data-kpu.json
-$dataContents = file_get_contents($dataFile);
-$dataArray = json_decode($dataContents, true);
-$provinceIds = array_keys($dataArray['table']); // Dapatkan daftar kode provinsi
-
-// Cek apakah cache valid
-if (!isCacheValid($cacheFile, $cacheLifetime)) {
-    // Jika cache tidak valid, lakukan request ke API
-    $combinedData = []; // Array untuk menyimpan data gabungan
-
-    foreach ($provinceIds as $id) {
-        $url = "https://kp24-fd486.et.r.appspot.com/h?id=$id";
-        $data = fetchApiData($url);
-        if (!empty($data) && isset($data['result']['aggregated'])) {
-            // Langsung gabungkan data berdasarkan ID lokasi
-            foreach ($data['result']['aggregated'] as $locId => $entries) {
-                if (!isset($combinedData[$locId])) {
-                    $combinedData[$locId] = [];
-                }
-                // Asumsikan struktur data dari setiap API konsisten dan dapat langsung digabungkan
-                $combinedData[$locId] = array_merge($combinedData[$locId], $entries);
-            }
-        }
-    }
-
-    // Simpan data gabungan ke cache
-    file_put_contents($cacheFile, json_encode(['table' => $combinedData]));
-} else {
-    // Jika cache masih valid, gunakan data dari cache
-    $combinedData = json_decode(file_get_contents($cacheFile), true);
-}
+// Decode data JSON menjadi array
+$resultArrayProvinsi = json_decode($resultProvinsi, true);
 
 // Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
-$jsonData = json_encode($combinedData);
+$jsonDataProv = json_encode($resultArrayProvinsi['result']['aggregated']);
+
+// Ambil timestamp dan persentase suara masuk dari data
+date_default_timezone_set('Asia/Jakarta'); 
+$timestamp = date('Y-m-d H:i:s');
+
 ?>
 
+<?php
+// Lokasi file JSON yang berisi data dan timestamp
+$dataKota = 'data/data-city-kawalpemilu.json';
 
+// Baca data dari file JSON
+$resultKota = file_get_contents($dataKota);
+
+// Decode data JSON menjadi array
+$resultArrayKota = json_decode($resultKota, true);
+
+// Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
+$jsonDataKota = json_encode($resultArrayKota);
+?>
 
 <!DOCTYPE html>
 
@@ -79,17 +53,31 @@ $jsonData = json_encode($combinedData);
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
-    <link rel="stylesheet" href="assets/css/custom.css" type="text/css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
+
 
     <title>BANTU KAWAL PEMILU 2024</title>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W4T8S7DD');</script>
+    <!-- End Google Tag Manager -->
 
 </head>
 
 <body class="homepage">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W4T8S7DD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="loadingIndicator" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <img src="assets/img/loading100.gif" alt="Loading..." />
+        <img src="assets/img/loading1001.gif" alt="Loading..." />
     </div>
 
     <div class="page-wrapper">
@@ -98,15 +86,15 @@ $jsonData = json_encode($combinedData);
                 <div class="text-center">
                     <h3 class="font-weight-bold">PETA SEBARAN SUARA PEMILU 2024 🇮🇩</h3>
                     <div class="primary-nav has-mega-menu" style="border-right:0px !important;">
-                        <ul class="navigation">
+                    <ul class="navigation">
                             <li>
-                                <a class="btn btn-danger rounded btn-xs" href="/">
+                                <a  href="/">
                                     <img src="assets/img/logokpu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
                                     Data KPU
                                 </a>
                             </li>
-                            <li><a href="/kawalpemilu.php">
-                                <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
+                            <li><a class="btn btn-danger rounded btn-xs" href="/kawalpemilu.php">
+                                <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px; background-color: white; border-radius: .5rem; ">
                                 Data Kawal Pemilu</a>
                             </li>
                         </ul>
@@ -126,8 +114,8 @@ $jsonData = json_encode($combinedData);
                 <!--end map-wrapper-->
                 <div class="results-wrapper">
                     <div class="text-center my-3 font-weight-bold">
-                        <h3>Data diambil dari : <a class="font-weight-bold" href="https://pemilu2024.kpu.go.id">KPU.GO.ID</a>
-                        <img src="assets/img/logokpu.png" class="ml-2" alt="Icon" style="max-width: 40px; max-height: 40px; vertical-align: middle; ">
+                        <h3>Data diambil dari : <a class="font-weight-bold" href="https://kawalpemilu.org">KAWALPEMILU.ORG</a>
+                        <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 40px; max-height: 40px; vertical-align: middle; ">
                         </h3>
                     </div>
                     <div class="container my-3">
@@ -138,14 +126,14 @@ $jsonData = json_encode($combinedData);
                                         Update Data Terakhir: <b class="badge badge-success" style="font-size: 18px;"><?php echo date('d M Y H:i:s', strtotime($timestamp)); ?> WIB</b>
                                     </div>
                                     <div class="card-body">
-                                        <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo $persentaseSuaraMasuk; ?>% </span></h5>
+                                        <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold" id="percentageOutput"></span></h5>
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <h5 class="card-title">Anies - Muhaimin</h5>
                                                         <img src="img/amin.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100025']); ?> </p>
+                                                        <p class="card-text"><span class="font-weight-bold totalPas1" ></span> </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -154,7 +142,7 @@ $jsonData = json_encode($combinedData);
                                                     <div class="card-body">
                                                         <h5 class="card-title">Prabowo - Gibran</h5>
                                                         <img src="img/pragib.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100026']); ?> </p>
+                                                        <p class="card-text"><span class="font-weight-bold totalPas2"></span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -163,7 +151,7 @@ $jsonData = json_encode($combinedData);
                                                     <div class="card-body">
                                                         <h5 class="card-title">Ganjar - Mahfud</h5>
                                                         <img src="img/gamud.webp" alt="Paslon 2" class="text-center mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100027']); ?> </p>
+                                                        <p class="card-text"><span class="font-weight-bold totalPas3""></span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -183,7 +171,7 @@ $jsonData = json_encode($combinedData);
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Update untuk Peta Sebaran Suara dari KawalPemilu, KawalAmin, Kawal Pemenangan Ganjar sedang diproses, mohon menunggu. ⚠️</p>
+                    <p class="mb-0 font-weight-bold">⚠️ Update data sudah bisa dibuka berdasarkan data Per Kota/Kabupaten. Silahkan akses dan jadikan web ini referensi kamu dalam mengawal pemilu! ⚠️</p>
                 </div>
             </div>
 
@@ -204,15 +192,17 @@ $jsonData = json_encode($combinedData);
                             <!-- Progress Bars Start Here -->
                             <h6>Anies-Muhaimin</h6>
                             <div class="progress mb-2">
-                                <div class="progress-bar" role="progressbar" style="width: <?php echo number_format($persentasePas1, 2); ?>%; background-color: orange;" aria-valuenow="<?php echo number_format($persentasePas1, 2); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($persentasePas1, 2); ?>%</div>
+                                <div class="progress-bar" id="progressBarPas1" role="progressbar" style="background-color: orange;" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
+
                             <h6>Prabowo-Gibran</h6>
                             <div class="progress mb-2">
-                                <div class="progress-bar" role="progressbar" style="width: <?php echo number_format($persentasePas2, 2); ?>%; background-color: blue;" aria-valuenow="<?php echo number_format($persentasePas2, 2); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($persentasePas2, 2); ?>%</div>
+                                <div class="progress-bar" id="progressBarPas2" role="progressbar" style="background-color: blue;" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
+
                             <h6>Ganjar-Mahfud</h6>
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: <?php echo number_format($persentasePas3, 2); ?>%; background-color: red;" aria-valuenow="<?php echo number_format($persentasePas3, 2); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($persentasePas3, 2); ?>%</div>
+                                <div class="progress-bar" id="progressBarPas3" role="progressbar" style="background-color: red;" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <!-- Progress Bars End Here -->
                         </div>
@@ -287,216 +277,321 @@ $jsonData = json_encode($combinedData);
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.js"></script>
 
     <script>
-        // Lokasi awal dan zoom level
-        var awalLokasi = [-2.548926, 118.0148634];
-        var awalZoom = 5;
+    // Lokasi awal dan zoom level
+    var awalLokasi = [-2.548926, 118.0148634];
+    var awalZoom = 5;
 
-        var map = L.map('mapid', {
-            fullscreenControl: true,
-            fullscreenControlOptions: {
-                position: 'topleft'
-            }
-        }).setView(awalLokasi, awalZoom);
+    var map = L.map('mapid', {
+        fullscreenControl: true,
+        fullscreenControlOptions: {
+            position: 'topleft'
+        }
+    }).setView(awalLokasi, awalZoom);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Tambahkan fungsi untuk kembali ke lokasi awal
-        var kembaliKeAwal = function() {
-            map.flyTo(awalLokasi, awalZoom);
-        };
+    // Fungsi untuk kembali ke lokasi awal
+    var kembaliKeAwal = function() {
+        map.flyTo(awalLokasi, awalZoom);
+    };
 
-        // Membuat control kustom
-        var kustomControl = L.Control.extend({
-            options: {
-                position: 'topleft'
-            },
+    // Membuat control kustom
+    var kustomControl = L.Control.extend({
+        options: {
+            position: 'topleft'
+        },
 
-            onAdd: function(map) {
-                var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                controlDiv.innerHTML = '<button style="background-color: #fff; border: none; cursor: pointer; width: 30px; height: 30px; text-align: center;"><i class="fa fa-home"></i></button>';
-                controlDiv.title = "Kembali ke awal";
-                controlDiv.onclick = function() {
-                    kembaliKeAwal();
-                }
-                return controlDiv;
-            }
-        });
+        onAdd: function(map) {
+            var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            controlDiv.innerHTML = '<button style="background-color: #fff; border: none; cursor: pointer; width: 30px; height: 30px; text-align: center;"><i class="fa fa-home"></i></button>';
+            controlDiv.title = "Kembali ke awal";
+            controlDiv.onclick = kembaliKeAwal;
+            return controlDiv;
+        }
+    });
 
-        map.addControl(new kustomControl());
+    map.addControl(new kustomControl());
 
-        // Data pemilu diperoleh dari PHP
-        var hasilPemilu = JSON.parse('<?php echo $jsonData; ?>');
-        
-        var timestamp = hasilPemilu.ts;
-        var psu = hasilPemilu.psu;
-        var chartData = hasilPemilu.chart;
+    // Data pemilu diperoleh dari PHP untuk provinsi
+    var hasilPemiluProvinsi = JSON.parse('<?php echo $jsonDataProv; ?>');
 
-        // Contoh: Menampilkan data ts, psu, dan chart pada konsol
-        console.log('Timestamp:', timestamp);
-        console.log('PSU:', psu);
-        console.log('Chart Data:', chartData);
+    // Data pemilu untuk kota akan diinisialisasi ketika mode diubah
+    var hasilPemiluKota = JSON.parse('<?php echo $jsonDataKota; ?>');
 
+    // Variabel untuk menyimpan layer aktif dan mode saat ini
+    var activeLayer;
+    var currentMode = 'provinsi'; // Mode awal
 
-        function getColor(data) {
-            if (!data) return 'grey';
-            var pas1 = data['100025'];
-            var pas2 = data['100026'];
-            var pas3 = data['100027'];
-            var max = Math.max(pas1, pas2, pas3);
-            if (max === pas1) return 'orange';
-            if (max === pas2) return 'blue';
-            if (max === pas3) return 'red';
+    // Fungsi untuk mengganti mode dan memperbarui peta
+    function toggleMode() {
+        if (currentMode === 'provinsi') {
+            currentMode = 'kota';
+            // Ganti sumber data ke hasilPemiluKota
+            updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota);
+        } else {
+            currentMode = 'provinsi';
+            // Ganti sumber data ke hasilPemiluProvinsi
+            updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi);
+        }
+    }
+
+    function getColor(data) {
+        if (!data) return 'grey'; // Jika tidak ada data, kembalikan warna abu-abu
+        var pas1 = data.pas1 || 0;
+        var pas2 = data.pas2 || 0;
+        var pas3 = data.pas3 || 0;
+
+        // Jika semua paslon memiliki suara 0, kembalikan warna abu-abu
+        if (pas1 === 0 && pas2 === 0 && pas3 === 0) {
             return 'grey';
         }
 
-        fetch('geojson/indonesia-city1000.geojson')
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(json) {
-                L.geoJson(json, {
-                    style: function(feature) {
-                        var kodeProvinsi = feature.properties.CC_2.toString();
-                        var warna = 'gray';
-                        if (hasilPemilu.table[kodeProvinsi]) {
-                            var dataProvinsi = hasilPemilu.table[kodeProvinsi];
-                            warna = getColor(dataProvinsi);
-                        }
+        // Tentukan paslon dengan suara terbanyak
+        var max = Math.max(pas1, pas2, pas3);
+        if (max === pas1) return 'orange'; // Warna untuk paslon 1
+        if (max === pas2) return 'blue'; // Warna untuk paslon 2
+        if (max === pas3) return 'red'; // Warna untuk paslon 3
+        return 'grey'; // Default jika ada kondisi lain yang tidak terpenuhi
+    }
 
-                        // console.log(hasilPemilu.table[kodeProvinsi]);
 
-                        return {
-                            color: 'white',
-                            weight: 1,
-                            fillColor: warna,
-                            fillOpacity: 0.8
-                        };
-                    },
-                    onEachFeature: function(feature, layer) {
-                        var kodeProvinsi = feature.properties.CC_2.toString();
-                        var dataProvinsi = hasilPemilu.table[kodeProvinsi];
-                        // if (!dataProvinsi || typeof dataProvinsi['100025'] === 'undefined' || typeof dataProvinsi['100026'] === 'undefined' || typeof dataProvinsi['100027'] === 'undefined' || !dataProvinsi.status_progress) {
-                        //     var infoPemilu = "Data belum tersedia";
-                        //     layer.bindTooltip(feature.properties.Propinsi);
-                        //     layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
-                        // } else
-                             if (dataProvinsi) {
+    // Fungsi untuk memperbarui peta berdasarkan mode saat ini
+    function updateMap(geojsonPath, data) {
+        if (activeLayer) {
+            map.removeLayer(activeLayer);
+        }
 
-                            // Menghitung total suara di provinsi
-                            var totalSuaraProvinsi = dataProvinsi['100025'] + dataProvinsi['100026'] + dataProvinsi['100027'];
-                            var totalPersenSuara = dataProvinsi.persen;
+        fetch(geojsonPath)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(json) {
+            activeLayer = L.geoJson(json, {
+                style: function(feature) {
+                    var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
+                    var dataItem = (currentMode === 'provinsi' ? data[kode] : data.table[kode]) || [];
+                    var warna = dataItem.length > 0 ? getColor(dataItem[0]) : 'grey';
+                    return {
+                        color: 'white',
+                        weight: 1,
+                        fillColor: warna,
+                        fillOpacity: 0.8
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
+                    var dataProvinsi = (currentMode === 'provinsi' ? data[kode] : data.table[kode]) || [];
+
+                    if (dataProvinsi.length > 0) {
+                        var dataProvinsiItem = dataProvinsi[0];
+                        if (dataProvinsiItem.pas1 + dataProvinsiItem.pas2 + dataProvinsiItem.pas3 === 0) {
+                            var infoPemilu = "Data belum tersedia";
+                            layer.bindTooltip(feature.properties.Propinsi || feature.properties.NAME_2);
+                            layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi || feature.properties.NAME_2}</strong><br>${infoPemilu}`);
+                        } else {
+                            // Menghitung total suara di provinsi atau kota
+                            var totalSuara = dataProvinsiItem.pas1 + dataProvinsiItem.pas2 + dataProvinsiItem.pas3;
 
                             // Menghitung persentase untuk setiap paslon
-                            var persenPas1 = ((dataProvinsi['100025'] / totalSuaraProvinsi) * 100).toFixed(2);
-                            var persenPas2 = ((dataProvinsi['100026'] / totalSuaraProvinsi) * 100).toFixed(2);
-                            var persenPas3 = ((dataProvinsi['100027'] / totalSuaraProvinsi) * 100).toFixed(2);
+                            var persenPas1 = ((dataProvinsiItem.pas1 / totalSuara) * 100).toFixed(2);
+                            var persenPas2 = ((dataProvinsiItem.pas2 / totalSuara) * 100).toFixed(2);
+                            var persenPas3 = ((dataProvinsiItem.pas3 / totalSuara) * 100).toFixed(2);
 
-                            // Menambahkan tag img untuk logo paslon
-                            var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
-                            var logoPaslon2 = `<img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">`;
-                            var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
+                            var totalTps = dataProvinsiItem.totalTps;
+                            var totalCompletedTps = dataProvinsiItem.totalCompletedTps;
+
+                            // Menghitung persentase TPS yang telah selesai
+                            var totalPersenSuara = (totalCompletedTps / totalTps) * 100;
+                            totalPersenSuara = totalTps > 0 ? totalPersenSuara.toFixed(2) : 0;
+
                             var infoPemilu = `
-                                ${logoPaslon1} ANIES - MUHAIMIN: ${formatNumber(dataProvinsi['100025'])}  (${persenPas1}%)<br>
-                                ${logoPaslon2} PRABOWO - GIBRAN: ${formatNumber(dataProvinsi['100026'])}  (${persenPas2}%)<br>
-                                ${logoPaslon3} GANJAR - MAHFUD: ${formatNumber(dataProvinsi['100027'])}  (${persenPas3}%)
-                            `;
+                                <img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">ANIES - MUHAIMIN: ${formatNumber(dataProvinsiItem.pas1)}  (${persenPas1}%)<br>
+                                <img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">PRABOWO - GIBRAN: ${formatNumber(dataProvinsiItem.pas2)}  (${persenPas2}%)<br>
+                                <img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">GANJAR - MAHFUD: ${formatNumber(dataProvinsiItem.pas3)}  (${persenPas3}%)`;
 
-                            layer.bindTooltip(feature.properties.Propinsi);
+                            layer.bindTooltip(feature.properties.Propinsi || feature.properties.NAME_2);
                             layer.bindPopup(`
-                            <strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong>
-                            <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
-                                <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
-                                <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
-                                    ${totalPersenSuara}% Suara Masuk
+                                <strong style="font-size:16px !important;">${feature.properties.Propinsi || feature.properties.NAME_2}</strong>
+                                <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
+                                    <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
+                                        ${totalPersenSuara}% Suara Masuk
+                                    </div>
                                 </div>
-                            </div>
-                            ${infoPemilu}`);
+                                ${infoPemilu}`);
                         }
                     }
+                }
+            }).addTo(map);
 
+            initializeSearchControl(activeLayer);
+        });
 
-                }).addTo(map);
+    }
+
+    var searchControl; 
+    function initializeSearchControl(layer) {
+    if (searchControl) {
+        map.removeControl(searchControl); // Hapus kontrol pencarian lama jika ada
+    }
+
+    searchControl = new L.Control.Search({
+        layer: layer,
+        position: 'topright',
+        propertyName: currentMode === 'provinsi' ? 'Propinsi' : 'NAME_2', // Sesuaikan berdasarkan properti yang tersedia di GeoJSON Anda
+        initial: false,
+        moveToLocation: function(latlng, title, map) {
+            map.flyTo(latlng, 10, {
+                animate: true,
+                duration: 0.5
             });
 
-        // Add a legend for overseas data
-        // var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
-        // if (overseasData) {
-        //     var legend = L.control({
-        //         position: 'bottomright'
-        //     });
+            map.once('zoomend', function() {
+                // Temukan layer yang cocok berdasarkan judul (nama) yang dipilih
+                var matchingLayer = layer.getLayers().find(function(layer) {
+                    return layer.feature.properties[currentMode === 'provinsi' ? 'Propinsi' : 'NAME_2'] === title;
+                });
 
-        //     legend.onAdd = function(map) {
-        //         var div = L.DomUtil.create('div', 'card p-2 info legend');
-
-        //         var pas1Formatted = formatNumber(overseasData["100025"]);
-        //         var pas2Formatted = formatNumber(overseasData["100026"]);
-        //         var pas3Formatted = formatNumber(overseasData["100027"]);
-
-        //         var warnaPas1 = 'orange';
-        //         var warnaPas2 = 'blue';
-        //         var warnaPas3 = 'red';
-
-        //         div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
-        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
-        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
-
-        //         return div;
-        //     };
-
-
-        //     legend.addTo(map);
-        // }
-
-
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-    </script>
-
-    <!-- Pie Chart -->
-    <!-- <script>
-        var ctx = document.getElementById('suaraPaslonPieChart').getContext('2d');
-        var suaraPaslonPieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Anies-Muhaimin', 'Prabowo-Gibran', 'Ganjar-Mahfud'],
-                datasets: [{
-                    label: 'Jumlah Suara',
-                    data: [
-                        <?php echo $resultArray['chart']['100025']; ?>,
-                        <?php echo $resultArray['chart']['100026']; ?>,
-                        <?php echo $resultArray['chart']['100027']; ?>
-                    ],
-                    backgroundColor: [
-                        'orange',
-                        'blue',
-                        'red'
-                    ],
-                    borderColor: [
-                        'rgba(255, 255, 255, 1)',
-                        'rgba(255, 255, 255, 1)',
-                        'rgba(255, 255, 255, 1)'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true
+                // Jika layer yang cocok ditemukan, buka popupnya
+                if (matchingLayer) {
+                    // Memeriksa apakah layer memiliki metode untuk membuka popup
+                    if (matchingLayer.openPopup) {
+                        matchingLayer.openPopup();
                     }
                 }
+            });
+        }
+    }).addTo(map);
+}
+
+
+    // Menambahkan control untuk mengganti mode
+    var modeToggleControl = L.Control.extend({
+        options: {
+            position: 'topright'
+        },
+        onAdd: function(map) {
+            var controlDiv = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            controlDiv.innerHTML = '<button onclick="toggleMode()" style="background-color: #fff; border: none; cursor: pointer; width: 60px; height: 30px;">LIHAT PER KOTA</button>';
+            controlDiv.title = "Ganti Mode Tampilan";
+            return controlDiv;
+        }
+    });
+
+    map.addControl(new modeToggleControl());
+
+    // Memanggil fungsi updateMap untuk memuat mode awal dengan data provinsi
+    updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi);
+
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    </script>
+
+    <!-- Hitung Persentase Suara Masuk -->
+    <script>
+        // Fungsi untuk menghitung dan menampilkan persentase
+        function calculateAndDisplayTotalPercentage(data) {
+            let totalTps = 0;
+            let totalCompletedTps = 0;
+            let totalPas1 = 0;
+            let totalPas2 = 0;
+            let totalPas3 = 0;  
+
+            // Iterasi melalui semua entri di 'aggregated'
+            for (const key in data.aggregated) {
+                if (data.aggregated.hasOwnProperty(key)) {
+                    const locations = data.aggregated[key];
+                    locations.forEach(location => {
+                        totalTps += location.totalTps;
+                        totalCompletedTps += location.totalCompletedTps;
+                        totalPas1 += location.pas1;
+                        totalPas2 += location.pas2;
+                        totalPas3 += location.pas3;
+                    });
+                }
             }
-        });
-    </script> -->
+
+            let totalVotes = totalPas1 + totalPas2 + totalPas3; 
+
+            // Hitung persentase
+            const percentagePas1 = (totalPas1 / totalVotes) * 100;
+            const percentagePas2 = (totalPas2 / totalVotes) * 100;
+            const percentagePas3 = (totalPas3 / totalVotes) * 100;
+
+            document.getElementById('progressBarPas1').style.width = `${percentagePas1.toFixed(2)}%`;
+            document.getElementById('progressBarPas1').innerText = `${percentagePas1.toFixed(2)}%`;
+
+            document.getElementById('progressBarPas2').style.width = `${percentagePas2.toFixed(2)}%`;
+            document.getElementById('progressBarPas2').innerText = `${percentagePas2.toFixed(2)}%`;
+
+            document.getElementById('progressBarPas3').style.width = `${percentagePas3.toFixed(2)}%`;
+            document.getElementById('progressBarPas3').innerText = `${percentagePas3.toFixed(2)}%`;
+
+            // Hitung persentase dan tampilkan hasil
+            const percentage = (totalCompletedTps / totalTps) * 100;
+            document.getElementById('percentageOutput').innerHTML = `${percentage.toFixed(2)}%`;
+
+            // Update DOM untuk totalPas1, totalPas2, dan totalPas3
+            document.querySelectorAll('.totalPas1').forEach(element => {
+                element.innerHTML = `${totalPas1.toLocaleString('id-ID')}`;
+            });
+            document.querySelectorAll('.totalPas2').forEach(element => {
+                element.innerHTML = `${totalPas2.toLocaleString('id-ID')}`;
+            });
+            document.querySelectorAll('.totalPas3').forEach(element => {
+                element.innerHTML = `${totalPas3.toLocaleString('id-ID')}`;
+            });
+
+            // Mengembalikan nilai totalPas1, totalPas2, dan totalPas3
+            return { totalPas1, totalPas2, totalPas3 };
+        }
+        
+
+        // Memuat data dari file JSON dan menjalankan fungsi penghitungan
+        fetch('data/data-prov-kawalpemilu.json')
+            .then(response => response.json())
+            .then(data => {
+                const totals = calculateAndDisplayTotalPercentage(data.result);
+                updatePieChart(totals);
+            })
+            .catch(error => console.error('Error loading the JSON data: ', error));
+
+        // Fungsi untuk mengupdate chart pie
+        function updatePieChart(totals) {
+            var ctx = document.getElementById('suaraPaslonPieChart').getContext('2d');
+            var suaraPaslonPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Anies-Muhaimin', 'Prabowo-Gibran', 'Ganjar-Mahfud'],
+                    datasets: [{
+                        label: 'Jumlah Suara',
+                        data: [totals.totalPas1, totals.totalPas2, totals.totalPas3],
+                        backgroundColor: ['orange', 'blue', 'red'],
+                        borderColor: ['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

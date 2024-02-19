@@ -46,8 +46,8 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
-    <link rel="stylesheet" href="assets/css/custom.css" type="text/css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
 
     <title>BANTU KAWAL PEMILU 2024</title>
 
@@ -67,7 +67,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <div id="loadingIndicator" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <img src="assets/img/loading100.gif" alt="Loading..." />
+        <img src="assets/img/loading1001.gif" alt="Loading..." />
     </div>
 
     <div class="page-wrapper">
@@ -161,7 +161,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Update untuk Peta Sebaran Suara dari KawalPemilu, KawalAmin, Kawal Pemenangan Ganjar sedang diproses, mohon menunggu. ⚠️</p>
+                    <p class="mb-0 font-weight-bold">⚠️ Update data sudah bisa dibuka berdasarkan data Per Kota/Kabupaten. Silahkan akses dan jadikan web ini referensi kamu dalam mengawal pemilu! ⚠️</p>
                 </div>
             </div>
 
@@ -359,7 +359,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                         if (!dataProvinsi || typeof dataProvinsi['100025'] === 'undefined' || typeof dataProvinsi['100026'] === 'undefined' || typeof dataProvinsi['100027'] === 'undefined' || !dataProvinsi.status_progress) {
                             var infoPemilu = "Data belum tersedia";
                             layer.bindTooltip(feature.properties.Propinsi);
-                            layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+                            layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
                         } else if (dataProvinsi) {
 
                             // Menghitung total suara di provinsi

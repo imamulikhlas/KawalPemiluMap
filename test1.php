@@ -34,8 +34,8 @@ $jsonData = json_encode($resultArray);
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
 
-    <link rel="stylesheet" href="assets/css/custom.css" type="text/css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
 
     <title>BANTU KAWAL PEMILU 2024</title>
 
@@ -43,7 +43,7 @@ $jsonData = json_encode($resultArray);
 
 <body class="homepage">
     <div id="loadingIndicator" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <img src="assets/img/loading100.gif" alt="Loading..." />
+        <img src="assets/img/loading1001.gif" alt="Loading..." />
     </div>
 
     <div class="page-wrapper">
@@ -331,8 +331,8 @@ $jsonData = json_encode($resultArray);
                             var dataProvinsi = hasilPemilu.table[kodeProvinsi][0];
                             if (dataProvinsi.pas1 + dataProvinsi.pas2 + dataProvinsi.pas3 === 0) {
                                 var infoPemilu = "Data belum tersedia";
-                                layer.bindTooltip(feature.properties.Propinsi);
-                                layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+                                layer.bindTooltip(feature.properties.NAME_2);
+                                layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.NAME_2}</strong><br>${infoPemilu}`);
                             } else if (dataProvinsi) {
 
                                 // Menghitung total suara di provinsi
@@ -380,35 +380,6 @@ $jsonData = json_encode($resultArray);
 
                 }).addTo(map);
             });
-
-        // // Add a legend for overseas data
-        // var overseasData = hasilPemilu[99] ? hasilPemilu[99] : null;
-        // if (overseasData) {
-        //     var legend = L.control({
-        //         position: 'bottomright'
-        //     });
-
-        //     legend.onAdd = function(map) {
-        //         var div = L.DomUtil.create('div', 'card p-2 info legend');
-
-        //         var pas1Formatted = formatNumber(overseasData[0].pas1);
-        //         var pas2Formatted = formatNumber(overseasData[0].pas2);
-        //         var pas3Formatted = formatNumber(overseasData[0].pas3);
-
-        //         var warnaPas1 = 'orange';
-        //         var warnaPas2 = 'blue';
-        //         var warnaPas3 = 'red';
-
-        //         div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
-        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
-        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
-
-        //         return div;
-        //     };
-
-        //     legend.addTo(map);
-        // }
-
 
         function formatNumber(number) {
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");

@@ -39,9 +39,11 @@ $timestamp = date('Y-m-d H:i:s');
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
-    <link rel="stylesheet" href="assets/css/custom.css" type="text/css">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
+
 
     <title>BANTU KAWAL PEMILU 2024</title>
 
@@ -61,7 +63,7 @@ $timestamp = date('Y-m-d H:i:s');
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <div id="loadingIndicator" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <img src="assets/img/loading100.gif" alt="Loading..." />
+        <img src="assets/img/loading1001.gif" alt="Loading..." />
     </div>
 
     <div class="page-wrapper">
@@ -261,6 +263,7 @@ $timestamp = date('Y-m-d H:i:s');
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.js"></script>
 
     <script>
         // Lokasi awal dan zoom level
@@ -337,7 +340,7 @@ $timestamp = date('Y-m-d H:i:s');
                 return response.json();
             })
             .then(function(json) {
-                L.geoJson(json, {
+                var geoJsonLayer = L.geoJson(json, {
                     style: function(feature) {
                         var kodeProvinsi = feature.properties.kode.toString();
                         var warna = 'gray';
@@ -359,7 +362,7 @@ $timestamp = date('Y-m-d H:i:s');
                         if (dataProvinsi.pas1 + dataProvinsi.pas2 + dataProvinsi.pas3 === 0) {
                             var infoPemilu = "Data belum tersedia";
                             layer.bindTooltip(feature.properties.Propinsi);
-                            layer.bindPopup(`<strong>${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+                            layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
                         } else if (dataProvinsi) {
 
                             // Menghitung total suara di provinsi
@@ -401,7 +404,32 @@ $timestamp = date('Y-m-d H:i:s');
                         }
                     }
                 }).addTo(map);
+
+                var searchControl = new L.Control.Search({
+                    layer: geoJsonLayer,
+                    position: 'topright',
+                    propertyName: 'Propinsi',
+                    moveToLocation: function(latlng, title, map) {
+                        map.flyTo(latlng, 10, {
+                            animate: true,
+                            duration: 0.5
+                        });
+
+                        map.once('zoomend', function() {
+                            var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
+                                return layer.feature.properties.Propinsi === title;
+                            });
+
+                            if (matchingLayer) {
+                                matchingLayer.fire('click');
+                            }
+                        });
+                    }
+                });
+
+                searchControl.addTo(map);
             });
+
 
         // Add a legend for overseas data
         var overseasData = hasilPemilu[99] ? hasilPemilu[99] : null;
