@@ -338,8 +338,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                 window.legend = null;
             }
             // Memperbarui peta dengan data kota (tanpa legenda)
-            updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota).then(() => {
-            });
+            updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota)
         } else {
             currentMode = 'provinsi';
             modeToggleButton.innerHTML = 'LIHAT DATA PER KOTA';
@@ -348,9 +347,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                 map.removeControl(window.legend);
                 window.legend = null;
             }
-            updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi).then(() => {
-                showLegend(hasilPemiluProvinsi);
-            });
+            updateMap('geojson/indonesia-prov1001.geojson', hasilPemiluProvinsi)
         }
     }
 
