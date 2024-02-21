@@ -97,6 +97,12 @@ $jsonDataKota = json_encode($resultArrayKota);
                                 <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px; background-color: white; border-radius: .5rem; ">
                                 Data Kawal Pemilu</a>
                             </li>
+                            <li>
+                                <a href="/kawalamin.php">
+                                <img src="img/amin.webp" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
+                                    Data KawalAmin
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -205,6 +211,9 @@ $jsonDataKota = json_encode($resultArrayKota);
                                 <div class="progress-bar" id="progressBarPas3" role="progressbar" style="background-color: red;" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <!-- Progress Bars End Here -->
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center font-weight-bold">Total Suara</h5> <h1 class="text-center font-weight-bold" id="totalSuara"></h1>
                         </div>
                     </div>
                 </div>
@@ -599,6 +608,9 @@ $jsonDataKota = json_encode($resultArrayKota);
             document.querySelectorAll('.totalPas3').forEach(element => {
                 element.innerHTML = `${totalPas3.toLocaleString('id-ID')}`;
             });
+
+            // Total Suara
+            document.getElementById('totalSuara').innerHTML = `${totalVotes.toLocaleString('id-ID')}`;
 
             // Mengembalikan nilai totalPas1, totalPas2, dan totalPas3
             return { totalPas1, totalPas2, totalPas3 };

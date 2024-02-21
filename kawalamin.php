@@ -1,6 +1,7 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
 // Lokasi file JSON yang berisi data dan timestamp
-$combinedDataFile = 'data/data-prov-kpu.json';
+$combinedDataFile = 'data/data-prov-kawalamin.json';
 
 // Baca data dari file JSON
 $result = file_get_contents($combinedDataFile);
@@ -11,15 +12,35 @@ $resultArray = json_decode($result, true);
 // Siapkan data untuk digunakan dalam JavaScript dan PHP lainnya
 $jsonData = json_encode($resultArray);
 
-// Ambil timestamp dan persentase suara masuk dari data
-$timestamp = $resultArray['ts'];
-$persentaseSuaraMasuk = $resultArray['chart']['persen'];
+// // Ambil timestamp dan persentase suara masuk dari data
+$timestamp = $resultArray['timestamp'];
+// $persentaseSuaraMasuk = $resultArray['chart']['persen'];
+
+// HITUNG Suara
+$totalPas1 = 0;
+$totalPas2 = 0;
+$totalPas3 = 0;
+
+foreach ($resultArray['table'] as $provinceData) {
+    $totalPas1 += $provinceData['p1'];
+    $totalPas2 += $provinceData['p2'];
+    $totalPas3 += $provinceData['p3'];
+}
+
+$resultArray['chart'] = [
+    'p1' => $totalPas1,
+    'p2' => $totalPas2,
+    'p3' => $totalPas3,
+];
+
+$totalSuaraMasuk = $totalPas1 + $totalPas2 + $totalPas3;
 
 // HITUNG PERSENTASE
-$totalSuara = $resultArray['chart']['100025'] + $resultArray['chart']['100026'] + $resultArray['chart']['100027'];
-$persentasePas1 = ($resultArray['chart']['100025'] / $totalSuara) * 100;
-$persentasePas2 = ($resultArray['chart']['100026'] / $totalSuara) * 100;
-$persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
+$persentasePas1 = ($totalPas1 / $totalSuaraMasuk) * 100;
+$persentasePas2 = ($totalPas2 / $totalSuaraMasuk) * 100;
+$persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
+
+
 ?>
 
 
@@ -78,17 +99,19 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                     <div class="primary-nav has-mega-menu" style="border-right:0px !important;">
                         <ul class="navigation">
                             <li>
-                                <a class="btn btn-danger rounded btn-xs" href="/">
+                                <a href="/">
                                     <img src="assets/img/logokpu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
                                     Data KPU
                                 </a>
                             </li>
-                            <li><a href="/kawalpemilu.php">
+                            <li>
+                                <a href="/kawalpemilu.php">
                                 <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                Data Kawal Pemilu</a>
+                                    Data Kawal Pemilu
+                                </a>
                             </li>
                             <li>
-                                <a href="/kawalamin.php">
+                                <a  class="btn btn-danger rounded btn-xs" href="/kawalamin.php">
                                 <img src="img/amin.webp" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
                                     Data KawalAmin
                                 </a>
@@ -110,8 +133,8 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                 <!--end map-wrapper-->
                 <div class="results-wrapper">
                     <div class="text-center my-3 font-weight-bold">
-                        <h3>Data diambil dari : <a class="font-weight-bold" href="https://pemilu2024.kpu.go.id">KPU.GO.ID</a>
-                        <img src="assets/img/logokpu.png" class="ml-2" alt="Icon" style="max-width: 40px; max-height: 40px; vertical-align: middle; ">
+                        <h3>Data diambil dari : <a class="font-weight-bold" href="https://kawalamin.com">KAWALAMIN.COM</a>
+                        <img src="img/amin.webp" class="ml-2" alt="Icon" style="max-width: 40px; max-height: 40px; vertical-align: middle; ">
                         </h3>
                     </div>
                     <div class="container my-3">
@@ -121,15 +144,19 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                                     <div class="card-header bg-secondary" style="color: white;">
                                         Update Data Terakhir: <b class="badge badge-success" style="font-size: 18px;"><?php echo date('d M Y H:i:s', strtotime($timestamp)); ?> WIB</b>
                                     </div>
+                                    <!-- <div class="card-header bg-secondary" style="color: white;">
+                                        Update Data Terakhir: <b class="badge badge-success" style="font-size: 18px;">2024-02-21 19:55:18 WIB</b>
+                                    </div> -->
                                     <div class="card-body">
-                                        <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo $persentaseSuaraMasuk; ?>% </span></h5>
+                                        <!-- <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo $persentaseSuaraMasuk; ?>% </span></h5> -->
+                                        <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($totalSuaraMasuk, 0, '', '.'); ?> </span></h5>
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <h5 class="card-title">Anies - Muhaimin</h5>
                                                         <img src="img/amin.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100025']); ?> </p>
+                                                        <p class="card-text font-weight-bold"><?php echo number_format($resultArray['chart']['p1'], 0, '', '.');  ?> </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -138,7 +165,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                                                     <div class="card-body">
                                                         <h5 class="card-title">Prabowo - Gibran</h5>
                                                         <img src="img/pragib.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100026']); ?> </p>
+                                                        <p class="card-text font-weight-bold"><?php echo number_format($resultArray['chart']['p2'], 0, '', '.');  ?> </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -147,7 +174,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                                                     <div class="card-body">
                                                         <h5 class="card-title">Ganjar - Mahfud</h5>
                                                         <img src="img/gamud.webp" alt="Paslon 2" class="text-center mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100027']); ?> </p>
+                                                        <p class="card-text font-weight-bold"><?php echo number_format($resultArray['chart']['p3'], 0, '', '.');  ?> </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -167,7 +194,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Update data sudah bisa dibuka berdasarkan data Per Kota/Kabupaten. Silahkan akses dan jadikan web ini referensi kamu dalam mengawal pemilu! ⚠️</p>
+                    <p class="mb-0 font-weight-bold">⚠️ Data KAWALAMIN.COM Menajadi referensi kami untuk menampilkannya ke dalam peta pemilu di bantukawalpemilu.online . Jadikan ini referensi untuk mengawal Demokrasi di Indonesia ⚠️</p>
                 </div>
             </div>
 
@@ -185,7 +212,6 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                     <div class="card shadow">
                         <div class="card-body">
                             <h5 class="card-title text-center">Persentase Suara</h5>
-                            <!-- Progress Bars Start Here -->
                             <h6>Anies-Muhaimin</h6>
                             <div class="progress mb-2">
                                 <div class="progress-bar" role="progressbar" style="width: <?php echo number_format($persentasePas1, 2); ?>%; background-color: orange;" aria-valuenow="<?php echo number_format($persentasePas1, 2); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($persentasePas1, 2); ?>%</div>
@@ -198,15 +224,12 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" style="width: <?php echo number_format($persentasePas3, 2); ?>%; background-color: red;" aria-valuenow="<?php echo number_format($persentasePas3, 2); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo number_format($persentasePas3, 2); ?>%</div>
                             </div>
-                            <!-- Progress Bars End Here -->
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title text-center font-weight-bold">Total Suara</h5> <h1 class="text-center font-weight-bold"><?php echo number_format($totalSuara, 0, '', '.'); ?></h1>
+                            <h5 class="card-title text-center font-weight-bold">Total Suara</h5> <h1 class="text-center font-weight-bold"><?php echo number_format($totalSuaraMasuk, 0, '', '.'); ?></h1>
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
         <footer id="page-footer">
@@ -331,9 +354,9 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
 
         function getColor(data) {
             if (!data) return 'grey';
-            var pas1 = data['100025'];
-            var pas2 = data['100026'];
-            var pas3 = data['100027'];
+            var pas1 = data['p1'];
+            var pas2 = data['p2'];
+            var pas3 = data['p3'];
             var max = Math.max(pas1, pas2, pas3);
             if (max === pas1) return 'orange';
             if (max === pas2) return 'blue';
@@ -365,40 +388,45 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                     onEachFeature: function(feature, layer) {
                         var kodeProvinsi = feature.properties.kode.toString();
                         var dataProvinsi = hasilPemilu.table[kodeProvinsi];
-                        if (!dataProvinsi || typeof dataProvinsi['100025'] === 'undefined' || typeof dataProvinsi['100026'] === 'undefined' || typeof dataProvinsi['100027'] === 'undefined' || !dataProvinsi.status_progress) {
+
+                        if (!dataProvinsi || typeof dataProvinsi['p1'] === 0 || typeof dataProvinsi['p2'] === 0 || typeof dataProvinsi['p3'] === 0 ) {
                             var infoPemilu = "Data belum tersedia";
                             layer.bindTooltip(feature.properties.Propinsi);
                             layer.bindPopup(`<strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong><br>${infoPemilu}`);
+
                         } else if (dataProvinsi) {
 
                             // Menghitung total suara di provinsi
-                            var totalSuaraProvinsi = dataProvinsi['100025'] + dataProvinsi['100026'] + dataProvinsi['100027'];
+                            var totalSuaraProvinsi = dataProvinsi['p1'] + dataProvinsi['p2'] + dataProvinsi['p3'];
                             var totalPersenSuara = dataProvinsi.persen;
 
                             // Menghitung persentase untuk setiap paslon
-                            var persenPas1 = ((dataProvinsi['100025'] / totalSuaraProvinsi) * 100).toFixed(2);
-                            var persenPas2 = ((dataProvinsi['100026'] / totalSuaraProvinsi) * 100).toFixed(2);
-                            var persenPas3 = ((dataProvinsi['100027'] / totalSuaraProvinsi) * 100).toFixed(2);
+                            var persenPas1 = ((dataProvinsi['p1'] / totalSuaraProvinsi) * 100).toFixed(2);
+                            var persenPas2 = ((dataProvinsi['p2'] / totalSuaraProvinsi) * 100).toFixed(2);
+                            var persenPas3 = ((dataProvinsi['p3'] / totalSuaraProvinsi) * 100).toFixed(2);
 
                             // Menambahkan tag img untuk logo paslon
                             var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
                             var logoPaslon2 = `<img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">`;
                             var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
                             var infoPemilu = `
-                                ${logoPaslon1} ANIES - MUHAIMIN: ${formatNumber(dataProvinsi['100025'])}  (${persenPas1}%)<br>
-                                ${logoPaslon2} PRABOWO - GIBRAN: ${formatNumber(dataProvinsi['100026'])}  (${persenPas2}%)<br>
-                                ${logoPaslon3} GANJAR - MAHFUD: ${formatNumber(dataProvinsi['100027'])}  (${persenPas3}%)
+                                ${logoPaslon1} ANIES - MUHAIMIN: ${formatNumber(dataProvinsi['p1'])}  (${persenPas1}%)<br>
+                                ${logoPaslon2} PRABOWO - GIBRAN: ${formatNumber(dataProvinsi['p2'])}  (${persenPas2}%)<br>
+                                ${logoPaslon3} GANJAR - MAHFUD: ${formatNumber(dataProvinsi['p3'])}  (${persenPas3}%)
                             `;
 
                             layer.bindTooltip(feature.properties.Propinsi);
+                            // layer.bindPopup(`
+                            // <strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong>
+                            // <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
+                            //     <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
+                            //     <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
+                            //         ${totalPersenSuara}% Suara Masuk
+                            //     </div>
+                            // </div>
+                            // ${infoPemilu}`);
                             layer.bindPopup(`
-                            <strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong>
-                            <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
-                                <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
-                                <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
-                                    ${totalPersenSuara}% Suara Masuk
-                                </div>
-                            </div>
+                            <strong style="font-size:16px !important;">${feature.properties.Propinsi}</strong><br>
                             ${infoPemilu}`);
                         }
                     }
@@ -407,60 +435,60 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                 }).addTo(map);
                 
 
-                var searchControl = new L.Control.Search({
-                    layer: geoJsonLayer,
-                    position: 'topright',
-                    propertyName: 'Propinsi', 
-                    moveToLocation: function(latlng, title, map) {
-                        map.flyTo(latlng, 10, {
-                            animate: true,
-                            duration: 0.5
-                        });
+                // var searchControl = new L.Control.Search({
+                //     layer: geoJsonLayer,
+                //     position: 'topright',
+                //     propertyName: 'Propinsi', 
+                //     moveToLocation: function(latlng, title, map) {
+                //         map.flyTo(latlng, 10, {
+                //             animate: true,
+                //             duration: 0.5
+                //         });
 
-                        map.once('zoomend', function() {
-                            var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
-                                return layer.feature.properties.Propinsi === title;
-                            });
+                //         map.once('zoomend', function() {
+                //             var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
+                //                 return layer.feature.properties.Propinsi === title;
+                //             });
 
-                            if (matchingLayer) {
-                                matchingLayer.fire('click');
-                            }
-                        });
-                    }
-                });
+                //             if (matchingLayer) {
+                //                 matchingLayer.fire('click');
+                //             }
+                //         });
+                //     }
+                // });
 
-                searchControl.addTo(map);
+                // searchControl.addTo(map);
 
             });
 
         // Add a legend for overseas data
-        var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
-        if (overseasData) {
-            var legend = L.control({
-                position: 'bottomright'
-            });
+        // var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
+        // if (overseasData) {
+        //     var legend = L.control({
+        //         position: 'bottomright'
+        //     });
 
-            legend.onAdd = function(map) {
-                var div = L.DomUtil.create('div', 'card p-2 info legend');
+        //     legend.onAdd = function(map) {
+        //         var div = L.DomUtil.create('div', 'card p-2 info legend');
 
-                var pas1Formatted = formatNumber(overseasData["100025"]);
-                var pas2Formatted = formatNumber(overseasData["100026"]);
-                var pas3Formatted = formatNumber(overseasData["100027"]);
+        //         var pas1Formatted = formatNumber(overseasData["p1"]);
+        //         var pas2Formatted = formatNumber(overseasData["p2"]);
+        //         var pas3Formatted = formatNumber(overseasData["p3"]);
 
-                var warnaPas1 = 'orange';
-                var warnaPas2 = 'blue';
-                var warnaPas3 = 'red';
+        //         var warnaPas1 = 'orange';
+        //         var warnaPas2 = 'blue';
+        //         var warnaPas3 = 'red';
 
-                div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
-                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
-                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
+        //         div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
+        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
+        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
 
-                return div;
-            };
+        //         return div;
+        //     };
 
 
-            legend.addTo(map);
-        }
+        //     legend.addTo(map);
+        // }
 
 
         function formatNumber(number) {
@@ -478,9 +506,9 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                 datasets: [{
                     label: 'Jumlah Suara',
                     data: [
-                        <?php echo $resultArray['chart']['100025']; ?>,
-                        <?php echo $resultArray['chart']['100026']; ?>,
-                        <?php echo $resultArray['chart']['100027']; ?>
+                        <?php echo $totalPas1; ?>,
+                        <?php echo $totalPas2; ?>,
+                        <?php echo $totalPas3; ?>
                     ],
                     backgroundColor: [
                         'orange',
