@@ -1,7 +1,8 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
 // Lokasi file JSON yang berisi data dan timestamp
-$combinedDataFile = 'data/data-prov-kawalamin.json';
+$combinedDataFile = 'http://47.236.80.211/data-prov-kawalamin.json';
+// $combinedDataFile = 'data/data-prov-kawalamin.json';
 
 // Baca data dari file JSON
 $result = file_get_contents($combinedDataFile);
@@ -193,11 +194,16 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
         <!--end page-content-->
         <div class="container my-4">
             <div class="card shadow">
-                <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Data KAWALAMIN.COM menjadi referensi kami untuk menampilkannya ke dalam peta pemilu di bantukawalpemilu.online . Jadikan ini referensi untuk mengawal Demokrasi di Indonesia ⚠️</p>
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">Mengenal Bantukawalpemilu.online</h5>
+                    <p class="text-justify" style="font-size: 0.9rem; line-height: 1.5;">
+                        <strong>Bantukawalpemilu.online</strong> merupakan platform inovatif yang berkomitmen untuk meningkatkan transparansi dan keadilan dalam pemilihan umum Indonesia 2024. Dengan menghimpun data resmi dari <strong>KPU.GO.ID</strong>, <strong>KAWALPEMILU.ORG</strong>, dan <strong>KAWALAMIN.COM</strong>, situs ini menyediakan akses terpadu kepada publik untuk memantau proses pemilu. Melalui visualisasi data yang intuitif dan pembaruan data per Kota/Kabupaten, kami memfasilitasi partisipasi aktif warga dalam mengawasi pemilu, memastikan proses demokrasi berjalan dengan integritas dan keadilan.
+                    </p>
+                    <div class="text-center mt-4">
+                        <a href="about-us.php" class="btn btn-primary">Pelajari Lebih Lanjut</a>
+                    </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-6 my-3">
                     <div class="card shadow">
@@ -267,7 +273,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                                 <p data-toggle="modal" data-target="#myModal">Selamat menggunakan web ini untuk mengawal demokrasi dan hasil Pemilu Presiden 2024. Dapatkan source code : <a href="https://github.com/imamulikhlas">GITHUB</a> dan boleh juga kunjungi <a href="https://mams-ark.my.id">MAMS-ARK.MY.ID</a>.</p>
                             </div>
                             <div class="element width-50 text-align-right">
-                                <a href="mams-ark.my.id" class="circle-icon"><i class="fas "></i></a>
+                                <a href="/" class="circle-icon"><i class="fas "></i></a>
                             </div>
                         </div>
                         <div class="background-wrapper">
@@ -409,10 +415,48 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                             var logoPaslon1 = `<img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">`;
                             var logoPaslon2 = `<img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">`;
                             var logoPaslon3 = `<img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">`;
+                        
                             var infoPemilu = `
-                                ${logoPaslon1} ANIES - MUHAIMIN: ${formatNumber(dataProvinsi['p1'])}  (${persenPas1}%)<br>
-                                ${logoPaslon2} PRABOWO - GIBRAN: ${formatNumber(dataProvinsi['p2'])}  (${persenPas2}%)<br>
-                                ${logoPaslon3} GANJAR - MAHFUD: ${formatNumber(dataProvinsi['p3'])}  (${persenPas3}%)
+                            <div class="container">
+                                <!-- Paslon 1: ANIES - MUHAIMIN -->
+                                <div class="row align-items-center my-3">
+                                    <div class="col-auto">
+                                        <img src="img/amin.webp" alt="Logo Paslon 1" style="width: 50px; height: 50px;">
+                                    </div>
+                                    <div class="col">
+                                        <strong>ANIES - MUHAIMIN:</strong> ${formatNumber(dataProvinsi['p1'])} (${persenPas1}%)
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: ${persenPas1}%; background-color: orange;" aria-valuenow="${persenPas1}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Paslon 2: PRABOWO - GIBRAN -->
+                                <div class="row align-items-center my-3">
+                                    <div class="col-auto">
+                                        <img src="img/pragib.webp" alt="Logo Paslon 2" style="width: 50px; height: 45px;">
+                                    </div>
+                                    <div class="col">
+                                        <strong>PRABOWO - GIBRAN:</strong> ${formatNumber(dataProvinsi['p2'])} (${persenPas2}%)
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: ${persenPas2}%; background-color: blue;" aria-valuenow="${persenPas2}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Paslon 3: GANJAR - MAHFUD -->
+                                <div class="row align-items-center my-3">
+                                    <div class="col-auto">
+                                        <img src="img/gamud.webp" alt="Logo Paslon 3" style="width: 50px; height: 50px;">
+                                    </div>
+                                    <div class="col">
+                                        <strong>GANJAR - MAHFUD:</strong> ${formatNumber(dataProvinsi['p3'])} (${persenPas3}%)
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: ${persenPas3}%; background-color: red;" aria-valuenow="${persenPas3}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             `;
 
                             layer.bindTooltip(feature.properties.Propinsi);
@@ -435,60 +479,62 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                 }).addTo(map);
                 
 
-                // var searchControl = new L.Control.Search({
-                //     layer: geoJsonLayer,
-                //     position: 'topright',
-                //     propertyName: 'Propinsi', 
-                //     moveToLocation: function(latlng, title, map) {
-                //         map.flyTo(latlng, 10, {
-                //             animate: true,
-                //             duration: 0.5
-                //         });
+                var searchControl = new L.Control.Search({
+                    layer: geoJsonLayer,
+                    position: 'topright',
+                    propertyName: 'Propinsi', 
+                    moveToLocation: function(latlng, title, map) {
+                        map.flyTo(latlng, 10, {
+                            animate: true,
+                            duration: 0.5
+                        });
 
-                //         map.once('zoomend', function() {
-                //             var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
-                //                 return layer.feature.properties.Propinsi === title;
-                //             });
+                        map.once('zoomend', function() {
+                            var matchingLayer = geoJsonLayer.getLayers().find(function(layer) {
+                                return layer.feature.properties.Propinsi === title;
+                            });
 
-                //             if (matchingLayer) {
-                //                 matchingLayer.fire('click');
-                //             }
-                //         });
-                //     }
-                // });
+                            if (matchingLayer) {
+                                matchingLayer.fire('click');
+                            }
+                        });
+                    }
+                });
 
-                // searchControl.addTo(map);
+                searchControl.addTo(map);
 
             });
 
         // Add a legend for overseas data
-        // var overseasData = hasilPemilu["table"]["99"] ? hasilPemilu["table"]["99"] : null;
-        // if (overseasData) {
-        //     var legend = L.control({
-        //         position: 'bottomright'
-        //     });
+        var overseasData = hasilPemilu.table['11'];
+        if (overseasData) {
+            var legend = L.control({
+                position: 'bottomright'
+            });
 
-        //     legend.onAdd = function(map) {
-        //         var div = L.DomUtil.create('div', 'card p-2 info legend');
+            legend.onAdd = function(map) {
+                var div = L.DomUtil.create('div', 'card p-2 info legend');
 
-        //         var pas1Formatted = formatNumber(overseasData["p1"]);
-        //         var pas2Formatted = formatNumber(overseasData["p2"]);
-        //         var pas3Formatted = formatNumber(overseasData["p3"]);
+                // var pas1Formatted = formatNumber(overseasData["p1"]);
+                // var pas2Formatted = formatNumber(overseasData["p2"]);
+                // var pas3Formatted = formatNumber(overseasData["p3"]);
 
-        //         var warnaPas1 = 'orange';
-        //         var warnaPas2 = 'blue';
-        //         var warnaPas3 = 'red';
+                // var warnaPas1 = 'orange';
+                // var warnaPas2 = 'blue';
+                // var warnaPas3 = 'red';
 
-        //         div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
-        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
-        //         div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
+                // div.innerHTML += `<b class="mb-2">LUAR NEGERI</b><div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas1};"></span><b>ANIES - MUHAIMIN: ${pas1Formatted} Suara</b></div>`;
+                // div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas2};"></span><b>PRABOWO - GIBRAN: ${pas2Formatted} Suara</b></div>`;
+                // div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: ${warnaPas3};"></span><b>GANJAR - MAHFUD: ${pas3Formatted} Suara</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: orange;"></span><b>ANIES - MUHAIMIN</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: blue;"></span><b>PRABOWO - GIBRAN</b></div>`;
+                div.innerHTML += `<div class="legend-item"><span class="legend-color" style="background-color: red;"></span><b>GANJAR - MAHFUD</b></div>`;
+                return div;
+            };
 
-        //         return div;
-        //     };
 
-
-        //     legend.addTo(map);
-        // }
+            legend.addTo(map);
+        }
 
 
         function formatNumber(number) {

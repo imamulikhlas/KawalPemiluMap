@@ -1,6 +1,7 @@
 <?php
+
 date_default_timezone_set('Asia/Jakarta');
-$combinedDataFile = 'bantukawalpemilu.online/data/data-prov-kawalamin.json';
+$combinedDataFile = 'data-prov-kawalamin.json';
 $requestUrl = 'https://redash.estehtawar.online/api/queries/5/results';
 $authHeader = 'Authorization: Key t2oVzFSSkDotlscXE0JZWd2pFciMSyyUAV9ZBPmj';
 
@@ -11,6 +12,8 @@ function fetchApiData($url, $headers) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HEADER, false);
+    // Optional: If your API expects a JSON body, even an empty one, uncomment the next line
+    // curl_setopt($ch, CURLOPT_POSTFIELDS, '{}'); 
     $result = curl_exec($ch);
     if (curl_errno($ch)) {
         throw new Exception(curl_error($ch));
@@ -68,33 +71,34 @@ $headers = [
 
 try {
     $result = fetchApiData($requestUrl, $headers);
-} catch (Exception $e) {
-    die("Error fetching API data: " . $e->getMessage());
-}
+    $resultArray = json_decode($result, true);
 
-$resultArray = json_decode($result, true);
+    // Check if the expected data is present and is an array
+    if (!isset($resultArray['query_result']['data']['rows']) || !is_array($resultArray['query_result']['data']['rows'])) {
+        die("Invalid or missing data in API response");
+    }
 
-// Memproses data sebelum menyimpannya
-$processedData = [
-    'table' => []
-];
+    // Proceed with processing the data
+    $processedData = ['table' => []];
 
-foreach ($resultArray['query_result']['data']['rows'] as $row) {
-    // Hanya menyimpan data jika salah satu nama tidak null
-    if ($row['p1_name'] !== null || $row['p2_name'] !== null || $row['p3_name'] !== null) {
-        foreach ($provinceMapping as $code => $name) {
-            if (strtoupper($row['province']) === strtoupper($name)) {
-                // Menyimpan data menggunakan kode provinsi sebagai kunci jika nama provinsi cocok
-                $processedData['table'][$code] = $row;
-                break; // Keluar dari loop jika sudah menemukan dan menyimpan data
+    foreach ($resultArray['query_result']['data']['rows'] as $row) {
+        if ($row['p1_name'] !== null || $row['p2_name'] !== null || $row['p3_name'] !== null) {
+            foreach ($provinceMapping as $code => $name) {
+                if (strtoupper($row['province']) === strtoupper($name)) {
+                    $processedData['table'][$code] = $row;
+                    break;
+                }
             }
         }
     }
+
+    // Add timestamp
+    $processedData['timestamp'] = date('Y-m-d\TH:i:sP');
+
+    // Save the processed data to a JSON file
+    file_put_contents($combinedDataFile, json_encode($processedData));
+
+} catch (Exception $e) {
+    die("Error fetching API data: " . $e->getMessage());
 }
-
-// Menambahkan timestamp
-$processedData['timestamp'] = date('Y-m-d\TH:i:sP');
-
-// Menyimpan data yang sudah diproses ke dalam file JSON, menimpa data yang sudah ada
-file_put_contents($combinedDataFile, json_encode($processedData));
 ?>

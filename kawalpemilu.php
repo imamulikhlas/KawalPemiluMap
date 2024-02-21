@@ -178,11 +178,16 @@ $jsonDataKota = json_encode($resultArrayKota);
         <!--end page-content-->
         <div class="container my-4">
             <div class="card shadow">
-                <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Update data sudah bisa dibuka berdasarkan data Per Kota/Kabupaten. Silahkan akses dan jadikan web ini referensi kamu dalam mengawal pemilu! ⚠️</p>
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">Mengenal Bantukawalpemilu.online</h5>
+                    <p class="text-justify" style="font-size: 0.9rem; line-height: 1.5;">
+                        <strong>Bantukawalpemilu.online</strong> merupakan platform inovatif yang berkomitmen untuk meningkatkan transparansi dan keadilan dalam pemilihan umum Indonesia 2024. Dengan menghimpun data resmi dari <strong>KPU.GO.ID</strong>, <strong>KAWALPEMILU.ORG</strong>, dan <strong>KAWALAMIN.COM</strong>, situs ini menyediakan akses terpadu kepada publik untuk memantau proses pemilu. Melalui visualisasi data yang intuitif dan pembaruan data per Kota/Kabupaten, kami memfasilitasi partisipasi aktif warga dalam mengawasi pemilu, memastikan proses demokrasi berjalan dengan integritas dan keadilan.
+                    </p>
+                    <div class="text-center mt-4">
+                        <a href="about-us.php" class="btn btn-primary">Pelajari Lebih Lanjut</a>
+                    </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-6 my-3">
                     <div class="card shadow">
@@ -258,7 +263,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                                 <p data-toggle="modal" data-target="#myModal">Selamat menggunakan web ini untuk mengawal demokrasi dan hasil Pemilu Presiden 2024. Dapatkan source code : <a href="https://github.com/imamulikhlas">GITHUB</a> dan boleh juga kunjungi <a href="https://mams-ark.my.id">MAMS-ARK.MY.ID</a>.</p>
                             </div>
                             <div class="element width-50 text-align-right">
-                                <a href="mams-ark.my.id" class="circle-icon"><i class="fas "></i></a>
+                                <a href="/" class="circle-icon"><i class="fas "></i></a>
                             </div>
                         </div>
                         <div class="background-wrapper">
@@ -432,16 +437,54 @@ $jsonDataKota = json_encode($resultArrayKota);
                             totalPersenSuara = totalTps > 0 ? totalPersenSuara.toFixed(2) : 0;
 
                             var infoPemilu = `
-                                <img src="img/amin.webp" class="mt-3 mb-3 mr-2" alt="Logo Paslon 1" style="width: 50px; height: 50px;">ANIES - MUHAIMIN: ${formatNumber(dataProvinsiItem.pas1)}  (${persenPas1}%)<br>
-                                <img src="img/pragib.webp" class="mb-3 mr-2" alt="Logo Paslon 2" style="width: 50px; height: 45px;">PRABOWO - GIBRAN: ${formatNumber(dataProvinsiItem.pas2)}  (${persenPas2}%)<br>
-                                <img src="img/gamud.webp" class="mb-3 mr-2" alt="Logo Paslon 3" style="width: 50px; height: 50px;">GANJAR - MAHFUD: ${formatNumber(dataProvinsiItem.pas3)}  (${persenPas3}%)`;
+                            <div class="container">
+                                <!-- Paslon 1: ANIES - MUHAIMIN -->
+                                <div class="row align-items-center mt-2 mb-3">
+                                    <div class="col-auto">
+                                        <img src="img/amin.webp" alt="Logo Paslon 1" style="width: 50px; height: 50px;">
+                                    </div>
+                                    <div class="col">
+                                        <strong>ANIES - MUHAIMIN:</strong> ${formatNumber(dataProvinsiItem.pas1)} (${persenPas1}%)
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: ${persenPas1}%; background-color: orange;" aria-valuenow="${persenPas1}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Paslon 2: PRABOWO - GIBRAN -->
+                                <div class="row align-items-center my-3">
+                                    <div class="col-auto">
+                                        <img src="img/pragib.webp" alt="Logo Paslon 2" style="width: 50px; height: 45px;">
+                                    </div>
+                                    <div class="col">
+                                        <strong>PRABOWO - GIBRAN:</strong> ${formatNumber(dataProvinsiItem.pas2)} (${persenPas2}%)
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: ${persenPas2}%; background-color: blue;" aria-valuenow="${persenPas2}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Paslon 3: GANJAR - MAHFUD -->
+                                <div class="row align-items-center my-3">
+                                    <div class="col-auto">
+                                        <img src="img/gamud.webp" alt="Logo Paslon 3" style="width: 50px; height: 50px;">
+                                    </div>
+                                    <div class="col">
+                                        <strong>GANJAR - MAHFUD:</strong> ${formatNumber(dataProvinsiItem.pas3)} (${persenPas3}%)
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" role="progressbar" style="width: ${persenPas3}%; background-color: red;" aria-valuenow="${persenPas3}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
 
                             layer.bindTooltip(feature.properties.Propinsi || feature.properties.NAME_2);
                             layer.bindPopup(`
                                 <strong style="font-size:16px !important;">${feature.properties.Propinsi || feature.properties.NAME_2}</strong>
-                                <div class="progress mt-2 mb-0" style="height: 20px; position: relative; overflow: visible;">
+                                <div class="progress mt-2 mb-3" style="height: 20px; position: relative; overflow: visible;">
                                     <div class="progress-bar" role="progressbar" style="border-radius: .25rem; width: ${totalPersenSuara}%; background-color: green;" aria-valuenow="${totalPersenSuara}" aria-valuemin="0" aria-valuemax="100"></div>
-                                    <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: black; height: 20px; line-height: 20px; top: 0;">
+                                    <div style="position: absolute; width: 100%; text-align: center; font-weight: bold; color: white; height: 20px; line-height: 20px; top: 0; text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000, 1px 1px 0 #000000;">
                                         ${totalPersenSuara}% Suara Masuk
                                     </div>
                                 </div>
