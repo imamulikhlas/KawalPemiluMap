@@ -35,7 +35,7 @@ $jsonData = json_encode($resultArray);
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
 
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1001.css" type="text/css">
 
     <title>BANTU KAWAL PEMILU 2024</title>
 

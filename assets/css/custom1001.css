@@ -37,3 +37,7 @@
 body {
     padding-top: 90px; 
 }
+
+.padding-card-body1{
+    padding: 0.75rem !important;
+}

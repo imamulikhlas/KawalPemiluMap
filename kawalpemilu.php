@@ -56,7 +56,7 @@ $jsonDataKota = json_encode($resultArrayKota);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1001.css" type="text/css">
 
 
     <title>BANTU KAWAL PEMILU 2024</title>
@@ -90,17 +90,19 @@ $jsonDataKota = json_encode($resultArrayKota);
                             <li>
                                 <a  href="/">
                                     <img src="assets/img/logokpu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data KPU
+                                     KPU
                                 </a>
                             </li>
-                            <li><a class="btn btn-danger rounded btn-xs" href="/kawalpemilu.php">
+                            <li>
+                                <a class="btn btn-danger rounded btn-xs" href="/kawalpemilu.php">
                                 <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px; background-color: white; border-radius: .5rem; ">
-                                Data Kawal Pemilu</a>
+                                 Kawal Pemilu
+                                </a>
                             </li>
                             <li>
                                 <a href="/kawalamin.php">
                                 <img src="img/amin.webp" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data KawalAmin
+                                    KawalAmin
                                 </a>
                             </li>
                         </ul>
@@ -136,7 +138,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Anies - Muhaimin</h5>
                                                         <img src="img/amin.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
                                                         <p class="card-text"><span class="font-weight-bold totalPas1" ></span> </p>
@@ -145,7 +147,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                                             </div>
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Prabowo - Gibran</h5>
                                                         <img src="img/pragib.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
                                                         <p class="card-text"><span class="font-weight-bold totalPas2"></span></p>
@@ -154,7 +156,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                                             </div>
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Ganjar - Mahfud</h5>
                                                         <img src="img/gamud.webp" alt="Paslon 2" class="text-center mb-3" style="max-width: auto; height: 80px;">
                                                         <p class="card-text"><span class="font-weight-bold totalPas3""></span></p>

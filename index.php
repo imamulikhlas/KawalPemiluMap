@@ -47,7 +47,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1001.css" type="text/css">
 
     <title>BANTU KAWAL PEMILU 2024</title>
 
@@ -80,17 +80,19 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                             <li>
                                 <a class="btn btn-danger rounded btn-xs" href="/">
                                     <img src="assets/img/logokpu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data KPU
+                                    KPU
                                 </a>
                             </li>
-                            <li><a href="/kawalpemilu.php">
+                            <li>
+                                <a href="/kawalpemilu.php">
                                 <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                Data Kawal Pemilu</a>
+                                 Kawal Pemilu
+                                </a>
                             </li>
                             <li>
                                 <a href="/kawalamin.php">
                                 <img src="img/amin.webp" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data KawalAmin
+                                    KawalAmin
                                 </a>
                             </li>
                         </ul>
@@ -126,28 +128,28 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Anies - Muhaimin</h5>
                                                         <img src="img/amin.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100025']); ?> </p>
+                                                        <p class="card-text"> <?php echo number_format($resultArray['chart']['100025'], 0, '', '.');  ?> </p>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Prabowo - Gibran</h5>
                                                         <img src="img/pragib.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100026']); ?> </p>
+                                                        <p class="card-text"> <?php echo number_format($resultArray['chart']['100026'], 0, '', '.');  ?>  </p>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Ganjar - Mahfud</h5>
                                                         <img src="img/gamud.webp" alt="Paslon 2" class="text-center mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><?php echo number_format($resultArray['chart']['100027']); ?> </p>
+                                                        <p class="card-text"> <?php echo number_format($resultArray['chart']['100027'], 0, '', '.');  ?> </p>
                                                     </div>
                                                 </div>
                                             </div>

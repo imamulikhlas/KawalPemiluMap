@@ -68,7 +68,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/custom1000.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1001.css" type="text/css">
 
     <title>BANTU KAWAL PEMILU 2024</title>
 
@@ -101,19 +101,19 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                             <li>
                                 <a href="/">
                                     <img src="assets/img/logokpu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data KPU
+                                    KPU
                                 </a>
                             </li>
                             <li>
                                 <a href="/kawalpemilu.php">
                                 <img src="assets/img/logokawalpemilu.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data Kawal Pemilu
+                                    Kawal Pemilu
                                 </a>
                             </li>
                             <li>
                                 <a  class="btn btn-danger rounded btn-xs" href="/kawalamin.php">
                                 <img src="img/amin.webp" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px;">
-                                    Data KawalAmin
+                                    KawalAmin
                                 </a>
                             </li>
                         </ul>
@@ -153,7 +153,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Anies - Muhaimin</h5>
                                                         <img src="img/amin.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
                                                         <p class="card-text font-weight-bold"><?php echo number_format($resultArray['chart']['p1'], 0, '', '.');  ?> </p>
@@ -162,7 +162,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                                             </div>
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Prabowo - Gibran</h5>
                                                         <img src="img/pragib.webp" alt="Paslon 2" class="img-fluid mb-3" style="max-width: auto; height: 80px;">
                                                         <p class="card-text font-weight-bold"><?php echo number_format($resultArray['chart']['p2'], 0, '', '.');  ?> </p>
@@ -171,7 +171,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                                             </div>
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Ganjar - Mahfud</h5>
                                                         <img src="img/gamud.webp" alt="Paslon 2" class="text-center mb-3" style="max-width: auto; height: 80px;">
                                                         <p class="card-text font-weight-bold"><?php echo number_format($resultArray['chart']['p3'], 0, '', '.');  ?> </p>
@@ -194,7 +194,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-body text-center">
-                    <p class="mb-0 font-weight-bold">⚠️ Data KAWALAMIN.COM Menajadi referensi kami untuk menampilkannya ke dalam peta pemilu di bantukawalpemilu.online . Jadikan ini referensi untuk mengawal Demokrasi di Indonesia ⚠️</p>
+                    <p class="mb-0 font-weight-bold">⚠️ Data KAWALAMIN.COM menjadi referensi kami untuk menampilkannya ke dalam peta pemilu di bantukawalpemilu.online . Jadikan ini referensi untuk mengawal Demokrasi di Indonesia ⚠️</p>
                 </div>
             </div>
 
