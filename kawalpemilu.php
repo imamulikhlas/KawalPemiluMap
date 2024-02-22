@@ -287,7 +287,7 @@ $jsonDataKota = json_encode($resultArrayKota);
     </div>
     <!--end page-wrapper-->
     <a href="#" class="to-top scroll" data-show-after-scroll="600"><i class="arrow_up"></i></a>
-
+    <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script><script>sbBoW.draw("petapemilu","QmVyaSBEdWt1bmdhbiHwn5Kw","position-bottom-right","#76cc11","#ffffff")</script>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -347,7 +347,7 @@ $jsonDataKota = json_encode($resultArrayKota);
     function toggleMode() {
         if (currentMode === 'provinsi') {
             currentMode = 'kota';
-            modeToggleButton.innerHTML = 'LIHAT DATA PER PROV';
+            modeToggleButton.innerHTML = 'LIHAT PER PROV';
             // Menghapus legenda
             if (window.legend) {
                 map.removeControl(window.legend);
@@ -357,7 +357,7 @@ $jsonDataKota = json_encode($resultArrayKota);
             updateMap('geojson/indonesia-city1001.geojson', hasilPemiluKota)
         } else {
             currentMode = 'provinsi';
-            modeToggleButton.innerHTML = 'LIHAT DATA PER KOTA';
+            modeToggleButton.innerHTML = 'LIHAT PER KOTA';
             // Menghapus legenda
             if (window.legend) {
                 map.removeControl(window.legend);

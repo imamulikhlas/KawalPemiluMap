@@ -275,7 +275,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     </div>
     <!--end page-wrapper-->
     <a href="#" class="to-top scroll" data-show-after-scroll="600"><i class="arrow_up"></i></a>
-
+    <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script><script>sbBoW.draw("petapemilu","QmVyaSBEdWt1bmdhbiHwn5Kw","position-bottom-right","#76cc11","#ffffff")</script>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>

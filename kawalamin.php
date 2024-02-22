@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
 // Lokasi file JSON yang berisi data dan timestamp
-$combinedDataFile = 'http://47.236.80.211/data-prov-kawalamin.json';
+$combinedDataFile = 'http://47.245.83.57/data-prov-kawalamin.json';
 // $combinedDataFile = 'data/data-prov-kawalamin.json';
 
 // Baca data dari file JSON
@@ -35,6 +35,8 @@ $resultArray['chart'] = [
 ];
 
 $totalSuaraMasuk = $totalPas1 + $totalPas2 + $totalPas3;
+
+$persentaseSuara = ($totalSuaraMasuk / 146643385) * 100;
 
 // HITUNG PERSENTASE
 $persentasePas1 = ($totalPas1 / $totalSuaraMasuk) * 100;
@@ -149,7 +151,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                                         Update Data Terakhir: <b class="badge badge-success" style="font-size: 18px;">2024-02-21 19:55:18 WIB</b>
                                     </div> -->
                                     <div class="card-body">
-                                        <!-- <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo $persentaseSuaraMasuk; ?>% </span></h5> -->
+                                        <!-- <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($persentaseSuara, 2, '.', '') ; ?>% </span></h5> -->
                                         <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($totalSuaraMasuk, 0, '', '.'); ?> </span></h5>
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
@@ -297,7 +299,7 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
     </div>
     <!--end page-wrapper-->
     <a href="#" class="to-top scroll" data-show-after-scroll="600"><i class="arrow_up"></i></a>
-
+    <script type="text/javascript" src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"></script><script>sbBoW.draw("petapemilu","QmVyaSBEdWt1bmdhbiHwn5Kw","position-bottom-right","#76cc11","#ffffff")</script>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
