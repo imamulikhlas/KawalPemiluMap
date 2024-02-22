@@ -1,7 +1,16 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
-// Lokasi file JSON yang berisi data dan timestamp
-$combinedDataFile = 'http://47.245.83.57/data-prov-kawalamin.json';
+
+//Read .env
+require 'vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+//END
+
+// Data From ENV
+$dataDonation = $_ENV['API_DONATION'];
+$combinedDataFile = $_ENV['API_DATA_KAWALAMIN'];
 // $combinedDataFile = 'data/data-prov-kawalamin.json';
 
 // Baca data dari file JSON
@@ -237,8 +246,15 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                             <h5 class="card-title text-center font-weight-bold">Total Suara</h5> <h1 class="text-center font-weight-bold"><?php echo number_format($totalSuaraMasuk, 0, '', '.'); ?></h1>
                         </div>
                     </div>
-                </div>
+                </div>                  
             </div>
+            <div class="card shadow mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3 font-weight-bold">BARISAN RELAWAN DONATUR BANTUKAWALPEMILU.ONLINE</h5>
+                    <div id="donations-container"></div>
+                    <h5 class="card-title text-center mb-3">Terimakasih Buat Seluruh Relawan ❤️</h5>
+                </div>
+            </div>  
         </div>
         <footer id="page-footer">
             <div class="footer-wrapper">
@@ -306,7 +322,38 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.js"></script>
+    <!-- Donation -->
+    <script>
+        function loadDonations() {
+            fetch('<?php echo $dataDonation; ?>')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('donations-container');
+                    // Start a new row
+                    let cardsRow = '<div class="row">';
+                    data.forEach((donation, index) => {
+                        cardsRow += `
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title badge badge-success" style="font-size: 18px;">👑 ${donation.name}</h5>
+                                        <p class="card-text">Mendukung: <b>Rp ${donation.donation} 💸</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    cardsRow += '</div>'; // Close the row
+                    container.innerHTML = cardsRow; // Insert the row of cards into the container
+                })
+                .catch(console.error);
+        }
+        // Load donations immediately and then every 15 seconds
+        loadDonations();
+        setInterval(loadDonations, 15000);
+    </script>
 
+    <!-- Peta -->
     <script>
         // Lokasi awal dan zoom level
         var awalLokasi = [-2.548926, 118.0148634];
