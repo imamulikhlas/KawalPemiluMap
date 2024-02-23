@@ -55,7 +55,7 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
-    <link rel="stylesheet" href="assets/css/custom1001.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/custom1002.css" type="text/css">
 
     <title>BANTU KAWAL PEMILU 2024</title>
 
@@ -114,7 +114,9 @@ $persentasePas3 = ($resultArray['chart']['100027'] / $totalSuara) * 100;
         <div id="page-content">
             <div class="hero-section full-screen has-map has-sidebar">
                 <div class="map-wrapper">
-                    <div id="mapid"></div>
+                    <div id="mapid">
+                        <div class="watermark">© BANTUKAWALPEMILU.ONLINE</div>
+                    </div>
 
                 </div>
                 <!--end map-wrapper-->
