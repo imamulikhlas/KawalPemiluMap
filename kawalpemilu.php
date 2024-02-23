@@ -703,16 +703,11 @@ $jsonDataKota = json_encode($resultArrayKota);
             // Mengembalikan nilai totalPas1, totalPas2, dan totalPas3
             return { totalPas1, totalPas2, totalPas3 };
         }
-        
 
         // Memuat data dari file JSON dan menjalankan fungsi penghitungan
-        fetch('<?php echo $dataKota; ?>')
-            .then(response => response.json())
-            .then(data => {
-                const totals = calculateAndDisplayTotalPercentage(data.result);
-                updatePieChart(totals);
-            })
-            .catch(error => console.error('Error loading the JSON data: ', error));
+        const dataProvinsi = <?php echo $resultProvinsi; ?>;
+        const totals = calculateAndDisplayTotalPercentage(dataProvinsi.result);
+        updatePieChart(totals);
 
         // Fungsi untuk mengupdate chart pie
         function updatePieChart(totals) {
