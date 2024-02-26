@@ -46,19 +46,19 @@
         }
     }).setView(awalLokasi, awalZoom);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-
-    // L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-    //     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    //     maxZoom: 18,
-    //     id: 'mapbox/light-v10',
-    //     tileSize: 512,
-    //     zoomOffset: -1,
-    //     accessToken: 'pk.eyJ1IjoiaW1hbXVsaWtobGFzIiwiYSI6ImNsc3o4bGZ6YTBna3cya282MmVibzR1cjYifQ.oyGiNCtgqbIm4KDozbu4cQ'
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     attribution: '© OpenStreetMap contributors'
     // }).addTo(map);
+
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/light-v10',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoiaW1hbXVsaWtobGFzIiwiYSI6ImNsc3o4bGZ6YTBna3cya282MmVibzR1cjYifQ.oyGiNCtgqbIm4KDozbu4cQ'
+    }).addTo(map);
 
     // Fungsi untuk kembali ke lokasi awal
     var kembaliKeAwal = function() {
@@ -138,7 +138,27 @@
         return 'grey'; // Default jika ada kondisi lain yang tidak terpenuhi
     }
 
+    // Fungsi untuk menonjolkan (highlight) fitur saat mouseover
+    function highlightFeature(e) {
+        var layer = e.target;
 
+        layer.setStyle({
+            weight: 3,
+            color: 'white', 
+            dashArray: '',
+            fillOpacity: 1
+        });
+        
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+    }
+
+    // Fungsi untuk mereset penonjolan (highlight) fitur saat mouseout
+    function resetHighlight(e) {
+        activeLayer.resetStyle(e.target);
+    }
+    
     // Fungsi untuk memperbarui peta berdasarkan mode saat ini
     function updateMap(geojsonPath, data) {
         if (activeLayer) {
@@ -163,6 +183,12 @@
                         };
                     },
                     onEachFeature: function(feature, layer) {
+                        //Call Hover
+                        layer.on({
+                            mouseover: highlightFeature,
+                            mouseout: resetHighlight
+                        });
+
                         var kode = currentMode === 'provinsi' ? feature.properties.kode.toString() : feature.properties.CC_2.toString();
                         var dataProvinsi = (currentMode === 'provinsi' ? data[kode] : data[kode]) || [];
 

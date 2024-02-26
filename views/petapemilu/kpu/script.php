@@ -48,8 +48,17 @@
         }
     }).setView(awalLokasi, awalZoom);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     attribution: '© OpenStreetMap contributors'
+    // }).addTo(map);
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/light-v10',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoiaW1hbXVsaWtobGFzIiwiYSI6ImNsc3o4bGZ6YTBna3cya282MmVibzR1cjYifQ.oyGiNCtgqbIm4KDozbu4cQ'
     }).addTo(map);
 
     // Tambahkan fungsi untuk kembali ke lokasi awal
@@ -123,6 +132,32 @@
                     };
                 },
                 onEachFeature: function(feature, layer) {
+                    //HOVER FUNCTION
+                    function resetHighlight(e) {
+                        geoJsonLayer.resetStyle(e.target);
+                    }
+                    
+                    function highlightFeature(e) {
+                        var layer = e.target;
+
+                        layer.setStyle({
+                            weight: 3,
+                            color: 'white', 
+                            dashArray: '',
+                            fillOpacity: 1
+                        });
+
+                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                            layer.bringToFront();
+                        }
+                    }
+
+                    layer.on({
+                        mouseover: highlightFeature,
+                        mouseout: resetHighlight
+                    });
+                    //END HOVER STYLE
+
                     var kodeProvinsi = feature.properties.kode.toString();
                     var dataProvinsi = hasilPemilu.table[kodeProvinsi];
                     if (!dataProvinsi || typeof dataProvinsi['100025'] === 'undefined' || typeof dataProvinsi['100026'] === 'undefined' || typeof dataProvinsi['100027'] === 'undefined' || !dataProvinsi.status_progress) {
