@@ -30,8 +30,11 @@ if (isset($routes[$path])) {
     require __DIR__ . $routes[$path];
 } else {
     // Jika tidak ada dalam array, berikan respons 404
-    echo "Path not found, showing 404 page.<br>"; // Untuk debugging
+    // echo "Path not found, showing 404 page.<br>"; // Untuk debugging
     http_response_code(404);
-    require __DIR__ . '/views/404.php';
+    // require __DIR__ . '/views/error/404.php';
+
+    header('Location: /');
+    exit; 
 }
 ?>
