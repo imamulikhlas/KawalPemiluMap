@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="background-wrapper">
-                <div class="bg-transfer opacity-50">
+                <div class="">
                     <img src="/assets/img/footer-bg.png" alt="">
                 </div>
             </div>
