@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search/dist/leaflet-search.min.css" />
 
 <link rel="stylesheet" href="/assets/css/style.css" type="text/css">
-<link rel="stylesheet" href="/assets/css/custom1003.css" type="text/css">
+<link rel="stylesheet" href="/assets/css/custom1004.css" type="text/css">
 <title>BANTU KAWAL PEMILU 2024</title>
 
     <!-- Google Tag Manager -->
