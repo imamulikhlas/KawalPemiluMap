@@ -50,7 +50,7 @@
                 <div class="element width-50">
                     <img src="/assets/img/favicon/favicon-32x32.png" alt="Icon" style="max-width: 20px; max-height: 20px; vertical-align: middle; margin-right: 5px; margin-bottom:4px;">
                     #KAWALPEMILU2024 by Mams-ark.my.id 
-                    <span class="badge badge-success mt-1" style="font-size:12px;">Versi: 1.6.3</span>
+                    <span class="badge badge-success mt-1" style="font-size:12px;">Versi: 1.6.5</span>
                 </div>
             </div>
         </div>
