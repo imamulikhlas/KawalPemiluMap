@@ -125,6 +125,9 @@ $jsonDataKota = json_encode($resultArrayKota);
                 <div class="map-wrapper">
                     <div id="mapid">
                         <div class="watermark">© BANTUKAWALPEMILU.ONLINE</div>
+                        <div id="loading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
+                            <div class="loader"></div>
+                        </div>
                     </div>
 
                 </div>
@@ -168,7 +171,7 @@ $jsonDataKota = json_encode($resultArrayKota);
                                                     <div class="card-body padding-card-body1">
                                                         <h5 class="card-title">Ganjar - Mahfud</h5>
                                                         <img src="img/gamud.webp" alt="Paslon 2" class="text-center mb-3" style="max-width: auto; height: 80px;">
-                                                        <p class="card-text"><span class="font-weight-bold totalPas3""></span></p>
+                                                        <p class="card-text"><span class="font-weight-bold totalPas3"></span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -292,6 +295,8 @@ $jsonDataKota = json_encode($resultArrayKota);
                     <div class="container">
                         <div class="vertical-aligned-elements">
                             <div class="element width-50">🇮🇩 #KAWALPEMILU2024 Mams-ark.my.id</div>
+                            <div id="visitorCount">Total Visitors: 0</div>
+
                         </div>
                     </div>
                 </div>
@@ -339,6 +344,25 @@ $jsonDataKota = json_encode($resultArrayKota);
         setInterval(loadDonations, 15000);
     </script>
 
+    <script>
+        fetch('https://api.cloudflare.com/client/v4/zones/a4cf8b8cafdc6387b4e551afbe55f6dd/analytics/dashboard', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer uDhquSP7e7iT-YuiuFvJEmydZmvmLutnOH5R72fB',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Anda dapat mengekstrak jumlah visitor dari data dan menampilkannya di website Anda
+            const visitors = data.result.totals.visitors; // Pastikan path ini sesuai dengan struktur data yang dikembalikan oleh API
+            document.getElementById('visitorCount').innerText = `Total Visitors: ${visitors}`;
+        })
+        .catch(error => console.error('Error fetching data:', error));
+
+    </script>
+
     <!-- Peta -->
     <script>
     // Lokasi awal dan zoom level
@@ -352,10 +376,20 @@ $jsonDataKota = json_encode($resultArrayKota);
         }
     }).setView(awalLokasi, awalZoom);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     attribution: '© OpenStreetMap contributors'
+    // }).addTo(map);
 
+    
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/light-v10', 
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoiaW1hbXVsaWtobGFzIiwiYSI6ImNsc3o4bGZ6YTBna3cya282MmVibzR1cjYifQ.oyGiNCtgqbIm4KDozbu4cQ' 
+    }).addTo(map);
+    
     // Fungsi untuk kembali ke lokasi awal
     var kembaliKeAwal = function() {
         map.flyTo(awalLokasi, awalZoom);
@@ -390,6 +424,9 @@ $jsonDataKota = json_encode($resultArrayKota);
 
     // Fungsi untuk mengganti mode dan memperbarui peta
     function toggleMode() {
+        // Tampilkan elemen loading
+        document.getElementById('loading').style.display = 'block';
+
         if (currentMode === 'provinsi') {
             currentMode = 'kota';
             modeToggleButton.innerHTML = 'LIHAT PER PROV';
@@ -543,6 +580,8 @@ $jsonDataKota = json_encode($resultArrayKota);
             showLegend(data);
 
             initializeSearchControl(activeLayer);
+            document.getElementById('loading').style.display = 'none';
+
         });
 
     }
