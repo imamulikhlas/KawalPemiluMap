@@ -103,8 +103,8 @@ $persentasePas3 = ($totalPas3 / $totalSuaraMasuk) * 100;
                                         Update Data Terakhir: <b class="badge badge-success" style="font-size: 18px;">2024-02-21 19:55:18 WIB</b>
                                     </div> -->
                                     <div class="card-body">
-                                        <!-- <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($persentaseSuara, 2, '.', '') ; ?>% </span></h5> -->
-                                        <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($totalSuaraMasuk, 0, '', '.'); ?> </span></h5>
+                                        <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($persentaseSuara, 2, '.', '') ; ?>% </span></h5>
+                                        <!-- <h5 class="card-title">Total Suara Masuk: <span class="font-weight-bold"> <?php echo number_format($totalSuaraMasuk, 0, '', '.'); ?> </span></h5> -->
                                         <div class="row">
                                             <div class="col-lg-12 mb-3">
                                                 <div class="card">
