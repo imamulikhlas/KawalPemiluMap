@@ -88,3 +88,17 @@ body {
 .card{
     border-radius: 1rem;
 }
+
+.hero-section input[type="date"], .hero-section input[type="email"], .hero-section input[type="number"], .hero-section input[type="password"], .hero-section input[type="search"], .hero-section input[type="tel"], .hero-section input[type="text"], .hero-section input[type="time"], .hero-section textarea.form-control 
+{
+    max-width: 105px !important;
+}
+
+.leaflet-control-search .search-tooltip {
+    right: 0;
+    left: unset !important;
+}
+
+.leaflet-container .leaflet-control-search {
+    margin-left: 150px;
+}
